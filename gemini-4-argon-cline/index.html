@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Pocket World — Floating Island Diorama</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%2325364a'/%3E%3Cpath d='M12 36 Q32 28 52 36 L44 52 Q32 58 20 52 Z' fill='%238c7a6b'/%3E%3Cellipse cx='32' cy='35' rx='21' ry='6' fill='%237ebc69'/%3E%3Cpath d='M25 33 L25 23 L32 17 L39 23 L39 33 Z' fill='%23f4ead5'/%3E%3Cpath d='M23 24 L32 15 L41 24 Z' fill='%23c46d52'/%3E%3Crect x='30' y='26' width='4' height='5' rx='1' fill='%23ffbf5e'/%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="world-canvas" aria-label="Pocket World 3D floating island diorama"></canvas>
+      <div id="ui-root"></div>
+      <div id="toast-indicator" role="status" aria-live="polite"></div>
+      <div id="webgl-fallback" hidden role="alert">
+        <div class="fallback-card">
+          <h1>Pocket World</h1>
+          <p>
+            WebGL could not be initialized on this browser or device. Please enable hardware acceleration
+            or try a modern browser that supports WebGL to explore the interactive 3D floating island.
+          </p>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

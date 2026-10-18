@@ -1,11 +1,11 @@
 # ==============================================================================
-# AI Arena: one container, Caddy + 26 static servers under supervisord
+# AI Arena: one container, Caddy + 30 static servers under supervisord
 # ==============================================================================
 #   docker compose up -d --build                → http://localhost:8080/
 #   docker compose exec arena supervisorctl status
 #   docker compose logs -f arena
 #
-# Only :8080 is published. The model servers listen on 127.0.0.1:5101-5126
+# Only :8080 is published. The model servers listen on 127.0.0.1:5101-5130
 # inside the container and are reached by Caddy, never from the host. They are
 # generated from aggregator/models.json at image build time (see Dockerfile).
 #
@@ -24,7 +24,7 @@ services:
       - "${ARENA_PORT:-8080}:8080"
     volumes:
       # Optional, for dashboard work: edit aggregator/ and refresh instead of
-      # rebuilding. The 27 model builds are baked into the image.
+      # rebuilding. The 30 model builds are baked into the image.
       - ./aggregator:/srv/aggregator:ro
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/"]

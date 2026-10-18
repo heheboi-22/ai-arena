@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>Pocket World — Interactive 3D Island Diorama</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%2368a357'/><path d='M25 55 Q50 85 75 55 Z' fill='%238c7a6b'/><polygon points='40,55 50,35 60,55' fill='%23d96b43'/></svg>" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="canvas-container" aria-label="Interactive 3D floating island diorama"></div>
+      <div id="ui-root"></div>
+      <div id="webgl-fallback" class="webgl-fallback" hidden role="alert">
+        <div class="fallback-card">
+          <h2>WebGL Not Available</h2>
+          <p>
+            Pocket World requires WebGL to render its interactive 3D miniature island,
+            but your browser or device could not initialize a WebGL context.
+          </p>
+          <p class="fallback-hint">
+            Please ensure hardware acceleration is enabled in your browser settings or try a modern WebGL-compatible browser.
+          </p>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
+

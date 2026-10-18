@@ -1,7 +1,5 @@
-# syntax=docker/dockerfile:1
-
 # ==============================================================================
-# AI Arena: one image, one container, 28 processes
+# AI Arena: one image, one container, 31 processes
 # ==============================================================================
 #   docker compose up -d --build     then open http://localhost:8080/
 #
@@ -246,6 +244,30 @@ RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no
 COPY kimi-k3-workbuddy/ ./
 RUN npm run build \
  && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+# 5128  gemini-4-argon-antigravity
+FROM ${NODE_IMAGE} AS m-gemini-4-argon-antigravity
+WORKDIR /src
+COPY gemini-4-argon-antigravity/package.json gemini-4-argon-antigravity/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY gemini-4-argon-antigravity/ ./
+RUN npm run build \
+ && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+# 5129  glm-5.3-codebuddy
+FROM ${NODE_IMAGE} AS m-glm-5.3-codebuddy
+WORKDIR /src
+COPY GLM-5.3-Codebuddy/package.json GLM-5.3-Codebuddy/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY GLM-5.3-Codebuddy/ ./
+RUN npm run build \
+ && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+# 5130  kimi-k2.8-codebuddy
+FROM ${NODE_IMAGE} AS m-kimi-k2.8-codebuddy
+WORKDIR /src
+COPY Kimi-K2.8-Codebuddy/package.json Kimi-K2.8-Codebuddy/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY Kimi-K2.8-Codebuddy/ ./
+RUN npm run build \
+ && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
 
 # ==============================================================================
 # Stage: supervisord program per model, straight from models.json
@@ -293,6 +315,9 @@ COPY --from=m-claude-haiku-5.5-claude /out /srv/models/claude-haiku-5.5-claude
 COPY --from=m-claude-sonnet-5.5-claude /out /srv/models/claude-sonnet-5.5-claude
 COPY --from=m-claude-opus-5.5-claude /out /srv/models/claude-opus-5.5-claude
 COPY --from=m-kimi-k3-workbuddy /out /srv/models/kimi-k3-workbuddy
+COPY --from=m-gemini-4-argon-antigravity /out /srv/models/gemini-4-argon-antigravity
+COPY --from=m-glm-5.3-codebuddy /out /srv/models/glm-5.3-codebuddy
+COPY --from=m-kimi-k2.8-codebuddy /out /srv/models/kimi-k2.8-codebuddy
 
 # Installed at /etc/supervisord.conf on purpose: that is the first path
 # supervisorctl searches, so `supervisorctl status` inside the container works

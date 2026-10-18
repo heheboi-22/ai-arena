@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5C7.5 7 4.5 11 4.5 15a7.5 7.5 0 0 0 15 0c0-4-3-8-7.5-12.5Z' fill='%236fae4e'/%3E%3C/svg%3E" />
+    <meta name="description" content="Pocket World — a tiny floating island diorama. Orbit it, change the time, weather and wind, and click the house to turn on its lights." />
+    <title>Pocket World</title>
+  </head>
+  <body>
+    <div id="scene-container" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <aside class="panel" id="panel" aria-label="World controls">
+      <header class="panel-header">
+        <div class="brand">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 2.5C7.5 7 4.5 11 4.5 15a7.5 7.5 0 0 0 15 0c0-4-3-8-7.5-12.5Z" fill="#6fae4e" stroke="#4c7a33" stroke-width="1.1" stroke-linejoin="round"/>
+            <path d="M12 21.5v-8" stroke="#4c7a33" stroke-width="1.1" stroke-linecap="round"/>
+          </svg>
+          <h1>Pocket World</h1>
+        </div>
+        <button class="icon-btn" id="collapseBtn" aria-label="Collapse controls">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="panel-body">
+        <div class="control">
+          <label for="timeSlider">Time of day <span class="value" id="timeLabel">16:00</span></label>
+          <input type="range" id="timeSlider" min="0" max="24" step="0.1" value="16" />
+        </div>
+
+        <div class="control">
+          <span class="label" id="weatherLabel">Weather</span>
+          <div class="segmented" role="group" aria-labelledby="weatherLabel">
+            <button class="seg active" id="weatherClear" aria-pressed="true">Clear</button>
+            <button class="seg" id="weatherRain" aria-pressed="false">Rain</button>
+          </div>
+        </div>
+
+        <div class="control">
+          <label for="windSlider">Wind <span class="value" id="windLabel">30%</span></label>
+          <input type="range" id="windSlider" min="0" max="100" step="1" value="30" />
+        </div>
+
+        <div class="control row">
+          <label class="switch-label" for="lightsToggle">House lights</label>
+          <button class="switch" id="lightsToggle" role="switch" aria-checked="false" aria-label="Toggle house lights">
+            <span class="knob"></span>
+          </button>
+        </div>
+
+        <button class="reset" id="resetBtn">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2v3h-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Reset world
+        </button>
+
+        <p class="hint">Drag to orbit · scroll or pinch to zoom · click the house to toggle its lights</p>
+      </div>
+    </aside>
+
+    <div id="fallback" role="alert">
+      <div class="card">
+        <h2>Pocket World can't start</h2>
+        <p id="fallback-msg">WebGL is unavailable.</p>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

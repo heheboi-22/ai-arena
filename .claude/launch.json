@@ -1,0 +1,22 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "pocket-world-haiku",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "claude-haiku-5.5-claude",
+        "run",
+        "preview",
+        "--",
+        "--port",
+        "5181",
+        "--host",
+        "127.0.0.1",
+        "--strictPort"
+      ],
+      "port": 5181
+    }
+  ]
+}

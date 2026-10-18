@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d1524" />
+  <meta name="description" content="Pocket World — an interactive 3D diorama of a tiny floating island. Turn the hours, call the rain, stir the wind and light the little house." />
+  <title>Pocket World — a tiny floating island</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='13' r='8.8' fill='%2376ad5b'/%3E%3Crect x='8.7' y='12.2' width='6.6' height='4.8' rx='0.9' fill='%23f6ecd8'/%3E%3Cpath d='M8 12.4L12 9.2l4 3.2z' fill='%23c97a52'/%3E%3Crect x='11.1' y='14.3' width='1.8' height='2.7' rx='0.5' fill='%238a6844'/%3E%3Ccircle cx='16' cy='15.6' r='1.1' fill='%2379b7d6'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <div id="app"></div>
+
+  <aside class="panel" id="panel" aria-label="Pocket World controls">
+    <div class="panel-head">
+      <div class="panel-title">
+        <svg class="mark" viewBox="0 0 24 24" width="27" height="27" aria-hidden="true">
+          <circle cx="12" cy="13" r="8.8" fill="#76ad5b"/>
+          <rect x="8.7" y="12.2" width="6.6" height="4.8" rx="0.9" fill="#f6ecd8"/>
+          <path d="M8 12.4L12 9.2l4 3.2z" fill="#c97a52"/>
+          <rect x="11.1" y="14.3" width="1.8" height="2.7" rx="0.5" fill="#8a6844"/>
+          <circle cx="16" cy="15.6" r="1.1" fill="#79b7d6"/>
+        </svg>
+        <div class="title-text">
+          <h1>Pocket World</h1>
+          <p>a tiny floating island</p>
+        </div>
+      </div>
+      <button type="button" class="collapse-btn" id="collapseBtn" aria-expanded="true" aria-controls="panelBody" aria-label="Collapse controls">
+        <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 6.2l4 3.8 4-3.8"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="panel-body" id="panelBody">
+      <section class="ctrl">
+        <div class="ctrl-row">
+          <label for="timeRange">Time of day</label>
+          <output id="timeOut">16:00 · Afternoon</output>
+        </div>
+        <input type="range" id="timeRange" class="range range-time" min="0" max="24" step="0.25" value="16" />
+        <div class="scale" aria-hidden="true"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div>
+      </section>
+
+      <section class="ctrl">
+        <div class="ctrl-row"><span class="ctrl-label" id="weatherLabel">Weather</span></div>
+        <div class="seg" role="group" aria-labelledby="weatherLabel">
+          <button type="button" class="seg-btn is-active" id="btnClear" aria-pressed="true">
+            <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+              <circle cx="8" cy="8" r="2.9"/>
+              <path d="M8 1.4v1.5M8 13.1v1.5M1.4 8h1.5M13.1 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M12.6 3.4l-1 1M4.4 11.6l-1 1"/>
+            </svg>
+            <span>Clear</span>
+          </button>
+          <button type="button" class="seg-btn" id="btnRain" aria-pressed="false">
+            <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4.7 9.4h6.6a2.3 2.3 0 0 0 .3-4.6 3.7 3.7 0 0 0-7.1-.8 2.6 2.6 0 0 0 .2 5.4z"/>
+              <path d="M5.6 11.4l-.7 1.7M8.3 11.4l-.7 1.7M11 11.4l-.7 1.7"/>
+            </svg>
+            <span>Rain</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="ctrl">
+        <div class="ctrl-row">
+          <label for="windRange">Wind</label>
+          <output id="windOut">30%</output>
+        </div>
+        <input type="range" id="windRange" class="range range-wind" min="0" max="100" step="1" value="30" />
+      </section>
+
+      <section class="ctrl ctrl-inline">
+        <span class="ctrl-label">House lights</span>
+        <button type="button" class="switch" id="lightsToggle" role="switch" aria-checked="false">
+          <span class="switch-knob" aria-hidden="true"></span>
+        </button>
+      </section>
+
+      <button type="button" class="reset-btn" id="resetBtn">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3.5 12a8.5 8.5 0 1 0 8.5-8.5c-2.5 0-4.8 1.1-6.4 2.7L3.5 8.2"/>
+          <path d="M3.5 3.5v4.7h4.7"/>
+        </svg>
+        <span>Reset view</span>
+      </button>
+
+      <p class="hint">Drag to orbit · scroll or pinch to zoom · click the little house to toggle its lights.</p>
+    </div>
+  </aside>
+
+  <div class="fallback" id="fallback" hidden>
+    <div class="fallback-card">
+      <svg viewBox="0 0 24 24" width="46" height="46" aria-hidden="true">
+        <circle cx="12" cy="13" r="8.8" fill="#76ad5b"/>
+        <path d="M8 12.4L12 9.2l4 3.2z" fill="#c97a52"/>
+        <rect x="8.7" y="12.2" width="6.6" height="4.8" rx="0.9" fill="#f6ecd8"/>
+      </svg>
+      <h2>Pocket World can’t start</h2>
+      <p class="fallback-msg">This little world needs WebGL, which seems to be unavailable in this browser.</p>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

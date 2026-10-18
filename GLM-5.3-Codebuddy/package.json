@@ -1,0 +1,22 @@
+{
+  "name": "pocket-world-glm-5.3-codebuddy",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Pocket World - an interactive Three.js diorama of a tiny floating island.",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "serve": "npx -y serve -s -l 5129 dist"
+  },
+  "dependencies": {
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.180.0",
+    "typescript": "^5.6.3",
+    "vite": "^6.3.5"
+  }
+}

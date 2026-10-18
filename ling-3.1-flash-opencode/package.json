@@ -1,0 +1,20 @@
+{
+  "name": "pocket-world",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Pocket World — a polished, interactive 3D floating island diorama built with Three.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.180.0",
+    "typescript": "^5.6.3",
+    "vite": "^7.0.0"
+  }
+}

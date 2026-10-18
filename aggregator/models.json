@@ -240,5 +240,32 @@
     "path": "/kimi-k3-workbuddy/",
     "tag": "Moonshot AI",
     "color": "#06B6D4"
+  },
+  {
+    "id": "gemini-4-argon-antigravity",
+    "name": "Gemini 4 Argon (Antigravity)",
+    "port": 5128,
+    "fallbackPort": null,
+    "path": "/gemini-4-argon-antigravity/",
+    "tag": "Google",
+    "color": "#1A73E8"
+  },
+  {
+    "id": "glm-5.3-codebuddy",
+    "name": "GLM 5.3 (CodeBuddy)",
+    "port": 5129,
+    "fallbackPort": null,
+    "path": "/glm-5.3-codebuddy/",
+    "tag": "Zhipu AI",
+    "color": "#5B8DEF"
+  },
+  {
+    "id": "kimi-k2.8-codebuddy",
+    "name": "Kimi K2.8 (CodeBuddy)",
+    "port": 5130,
+    "fallbackPort": null,
+    "path": "/kimi-k2.8-codebuddy/",
+    "tag": "Moonshot AI",
+    "color": "#0891B2"
   }
 ]

@@ -45,6 +45,9 @@
 	import route_model claude-sonnet-5.5-claude 5125
 	import route_model claude-opus-5.5-claude 5126
 	import route_model kimi-k3-workbuddy 5127
+	import route_model gemini-4-argon-antigravity 5128
+	import route_model glm-5.3-codebuddy 5129
+	import route_model kimi-k2.8-codebuddy 5130
 
 	# --------------------------------------------------------------------------
 	# Aggregator Dashboard & Static Assets

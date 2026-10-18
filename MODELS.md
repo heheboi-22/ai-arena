@@ -9,7 +9,7 @@ Kolom `From` diambil dari field `tag` di `aggregator/models.json` kalau ada.
 Kolom `Harness` dan `Provider` dibaca dari akhiran nama folder. Sebagian baris
 hanya bisa diketahui dari catatan sesi pemilik repo, bukan dari file di repo:
 effort tiap harness (lihat legenda di bawah tabel), harness baris CoreWeave dan
-Freebuff, serta provider baris CoreWeave, Freebuff, WorkBuddy, Cline, dan OpenCode.
+Freebuff, serta provider baris CoreWeave, Freebuff, WorkBuddy, CodeBuddy, Cline, dan OpenCode.
 
 Satu baris masih `?` di kolom harness, `mimo-v2.6-flash`, karena nama foldernya
 tidak menyebut harness sama sekali. Kolom provider sudah terisi semua.
@@ -30,9 +30,11 @@ tidak menyebut harness sama sekali. Kolom provider sudah terisi semua.
 | Gemini 3.1 Pro | Google * | high | Google Antigravity | Google | `gemini-3.1-pro-antigraivty` |
 | Gemini 3.7 Flash | Google | high | Google Antigravity | Google | `gemini-3.7-flash` |
 | Gemini 3.8 Flash | Google | high | Google Antigravity | Google | `gemini-3.8-flash` |
+| Gemini 4 Argon | Google * | high | Google Antigravity | Google | `gemini-4-argon-antigravity` |
 | Gemini 4 Argon | Google * | xhigh | Cline | Cline | `gemini-4-argon-cline` |
 | GLM 5.2 | Zhipu AI | default | OpenCode | CoreWeave | `glm-5.2-coreweave` |
 | GLM 5.3 | Zhipu AI * | max | ZCode | Z.ai | `glm-5.3-zcode` |
+| GLM 5.3 | Zhipu AI | max | CodeBuddy | CodeBuddy | `GLM-5.3-Codebuddy` |
 | GLM 5.3 Flash | Zhipu AI | default | OpenCode | CoreWeave | `glm-5.3-flash-coreweave` |
 | GLM 5.3 Flash | Zhipu AI | max | Freebuff | Freebuff | `glm-5.3-flash-freebuff` |
 | GLM 5.3 Flash | Zhipu AI | max | ZCode | Z.ai | `glm-5.3-flash-zcode` |
@@ -42,7 +44,8 @@ tidak menyebut harness sama sekali. Kolom provider sudah terisi semua.
 | GPT 6 Sol | OpenAI * | xhigh | Zed | OpenAI | `gpt-6-sol-zed` |
 | GPT 6.1 Sol | OpenAI | xhigh | Codex CLI | OpenAI | `gpt-6.1-sol-codex` |
 | Grok 4.7 | xAI | xhigh | Cursor | xAI | `grok-4.7-cursor` |
-| Kimi K3 | Moonshot AI * | default | WorkBuddy | WorkBuddy | `kimi-k3-workbuddy` |
+| Kimi K2.8 | Moonshot AI | max | CodeBuddy | CodeBuddy | `Kimi-K2.8-Codebuddy` |
+| Kimi K3 | Moonshot AI | default | WorkBuddy | WorkBuddy | `kimi-k3-workbuddy` |
 | Ling 3.1 Flash | Ling | default | OpenCode | OpenCode | `ling-3.1-flash-opencode` |
 | LongCat 2.5 | LongCat | default | OpenCode | OpenCode | `longcat-2.5-opencode` |
 | MiMo v2.6 Flash | Xiaomi / MIMO | default | ? | Xiaomi | `mimo-v2.6-flash` |
@@ -67,10 +70,12 @@ reasoning tanpa tingkatan effort; Pixel Canary dan Space Bunny tidak punya setel
 effort sama sekali; Opus 4.6 Antigravity dan baris CoreWeave dibiarkan di setelan
 bawaan; Kimi K3 diisi `default` dari catatan pemilik repo.
 `max` = setelan tertinggi, terpakai di seluruh baris Freebuff (2 baris), seluruh
-baris ZCode (2 baris), dan satu baris OpenCode (`fledge-alpha-opencode`).
+baris ZCode (2 baris), satu baris OpenCode (`fledge-alpha-opencode`), serta dua baris
+CodeBuddy (`GLM-5.3-Codebuddy` dan `Kimi-K2.8-Codebuddy`).
 GLM 5.3 di ZCode awalnya ditulis `TBD` karena pemilik repo cuma ingat "tertinggi",
 lalu diisi `max` setelah katalog model menunjukkan tingkatan tertinggi GLM 5.3
-memang `max`.
+memang `max`; GLM 5.3 CodeBuddy dan Kimi K2.8 CodeBuddy dikonfirmasi pemilik repo
+memakai reasoning `max`.
 `medium` = setelan tengah, terpakai di satu baris Cursor (`opus-5.5-cursor`).
 Grok 4.7 awalnya masuk aturan Cursor `medium`, lalu diganti `xhigh` lewat koreksi
 pemilik repo, jadi baris Cursor tidak seragam.
@@ -98,6 +103,7 @@ model baru: pilih akhiran folder dulu, harness dan provider ikut sendiri.
 | `-zcode` | ZCode | Z.ai |
 | `-zed` | Zed | sesuai model |
 | `-workbuddy` | WorkBuddy | WorkBuddy |
+| `-codebuddy` / `-Codebuddy` | CodeBuddy | CodeBuddy |
 | `-coreweave` | tidak tertulis, dari catatan sesi: OpenCode | CoreWeave |
 | `-freebuff` | Freebuff | Freebuff |
 | tanpa akhiran | tidak tertulis | sesuai model |
@@ -161,13 +167,13 @@ Tiga baris pertama yang membuat klaim "effort tidak terekam di mana pun" di vers
 awal catatan ini perlu diperbaiki: untuk harness opencode datanya ada, tinggal
 dibaca. Untuk harness lain, sebagian nilainya masih dari catatan sesi pemilik repo.
 
-Kolom Effort sekarang terisi seluruhnya, 32 baris. Sebelas di antaranya dari
+Kolom Effort sekarang terisi seluruhnya, 35 baris. Sebelas di antaranya dari
 berkas di mesin ini, sisanya dari catatan sesi pemilik repo. Tidak ada lagi baris
 `TBD`.
 
 ## Selisih folder dan `models.json`
 
-32 folder model di repo, 27 terdaftar di `aggregator/models.json`. Lima folder
+35 folder model di repo (ditambah symlink `Gemini-4-Argon-Antigravity`), 30 terdaftar di `aggregator/models.json`. Lima folder
 belum punya entri konsol:
 
 - `gemini-3.1-pro-antigraivty`
@@ -178,6 +184,12 @@ belum punya entri konsol:
 
 `kimi-k3-workbuddy` sekarang sudah berisi source Pocket World lengkap dan
 terdaftar di port 5127.
+`gemini-4-argon-antigravity` sekarang sudah berisi source Pocket World lengkap dan
+terdaftar di port 5128.
+`GLM-5.3-Codebuddy` sekarang sudah berisi source Pocket World lengkap dan
+terdaftar di port 5129 (`glm-5.3-codebuddy`).
+`Kimi-K2.8-Codebuddy` sekarang sudah berisi source Pocket World lengkap dan
+terdaftar di port 5130 (`kimi-k2.8-codebuddy`).
 
 Dua hal kecil yang ketemu waktu mencatat:
 

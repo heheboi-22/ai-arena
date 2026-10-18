@@ -15,6 +15,7 @@
 
 # Screenshots, logs, local state
 **/.shots
+**/.check
 **/*.log
 **/*.local
 **/.DS_Store

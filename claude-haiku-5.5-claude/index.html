@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Pocket World: an interactive 3D diorama of a tiny floating island." />
+    <meta name="theme-color" content="#f4ecdc" />
+    <title>Pocket World</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='13' font-size='13'%3E%F0%9F%8F%9D%3C/text%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="scene" role="img" aria-label="A floating island diorama with a house, pond, windmill and trees"></canvas>
+
+      <section class="panel" id="panel" aria-labelledby="panel-title">
+        <header class="panel-head">
+          <div class="panel-title-block">
+            <h1 id="panel-title">Pocket World</h1>
+            <p class="panel-sub" id="phase-label">Afternoon</p>
+          </div>
+          <button type="button" class="panel-toggle" id="panel-toggle" aria-expanded="true" aria-controls="panel-body">
+            <span class="panel-toggle-text">Hide</span>
+          </button>
+        </header>
+
+        <div class="panel-body" id="panel-body">
+          <div class="control">
+            <div class="control-row">
+              <label for="time-slider">Time of day</label>
+              <output id="time-output" for="time-slider">16:00</output>
+            </div>
+            <input type="range" id="time-slider" min="0" max="1439" step="1" value="960" />
+          </div>
+
+          <fieldset class="control segmented">
+            <legend>Weather</legend>
+            <div class="segments">
+              <label class="segment">
+                <input type="radio" name="weather" value="clear" checked />
+                <span>Clear</span>
+              </label>
+              <label class="segment">
+                <input type="radio" name="weather" value="rain" />
+                <span>Rain</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="control">
+            <div class="control-row">
+              <label for="wind-slider">Wind</label>
+              <output id="wind-output" for="wind-slider">30%</output>
+            </div>
+            <input type="range" id="wind-slider" min="0" max="100" step="1" value="30" />
+          </div>
+
+          <div class="control switch-row">
+            <span class="switch-label" id="lights-label">House lights</span>
+            <button type="button" class="switch" id="lights-switch" role="switch" aria-checked="false" aria-labelledby="lights-label">
+              <span class="switch-knob"></span>
+            </button>
+          </div>
+
+          <div class="footer-row">
+            <button type="button" class="reset" id="reset-button">Reset view</button>
+            <p class="hint">Drag to orbit, scroll or pinch to zoom, tap the house to switch its lights.</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="notice" id="notice" role="alert" hidden></div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

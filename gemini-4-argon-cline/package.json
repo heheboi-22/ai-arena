@@ -1,0 +1,21 @@
+{
+  "name": "pocket-world-gemini-4-argon-cline",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Pocket World — an interactive 3D floating island diorama built with Three.js, Vite, and TypeScript.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.180.0",
+    "typescript": "^5.6.3",
+    "vite": "^6.3.5"
+  }
+}
