@@ -8,8 +8,8 @@ dan reasoning tidak dipisah jadi dua kolom karena keduanya setelan yang sama.
 Kolom `From` diambil dari field `tag` di `aggregator/models.json` kalau ada.
 Kolom `Harness` dan `Provider` dibaca dari akhiran nama folder. Sebagian baris
 hanya bisa diketahui dari catatan sesi pemilik repo, bukan dari file di repo:
-effort tiap harness (lihat legenda di bawah tabel), harness baris CoreWeave dan
-Freebuff, serta provider baris CoreWeave, Freebuff, WorkBuddy, CodeBuddy, Cline, dan OpenCode.
+effort tiap harness (lihat legenda di bawah tabel), harness baris CoreWeave,
+Freebuff, dan DSH, serta provider baris CoreWeave, Freebuff, WorkBuddy, CodeBuddy, Cline, dan OpenCode.
 
 Satu baris masih `?` di kolom harness, `mimo-v2.6-flash`, karena nama foldernya
 tidak menyebut harness sama sekali. Kolom provider sudah terisi semua.
@@ -26,6 +26,7 @@ tidak menyebut harness sama sekali. Kolom provider sudah terisi semua.
 | DeepSeek v4 Flash 0731 | DeepSeek | default | OpenCode | CoreWeave | `deepseek-v4-flash-0731-coreweave` |
 | DeepSeek v4.1 Flash | DeepSeek | default | OpenCode | CoreWeave | `deepseek-v4.1-flash-coreweave` |
 | DeepSeek v4.1 Flash | DeepSeek | max | Freebuff | Freebuff | `deepseek-v4.1-flash-freebuff` |
+| DeepSeek v4.1 Flash 1017 | DeepSeek | max | DeepSeek Harness | DeepSeek | `deepseek-v4.1-flash-1017-dsh` |
 | Fledge Alpha | Fledge | max | OpenCode | OpenCode | `fledge-alpha-opencode` |
 | Gemini 3.1 Pro | Google * | high | Google Antigravity | Google | `gemini-3.1-pro-antigraivty` |
 | Gemini 3.7 Flash | Google | high | Google Antigravity | Google | `gemini-3.7-flash` |
@@ -70,12 +71,13 @@ reasoning tanpa tingkatan effort; Pixel Canary dan Space Bunny tidak punya setel
 effort sama sekali; Opus 4.6 Antigravity dan baris CoreWeave dibiarkan di setelan
 bawaan; Kimi K3 diisi `default` dari catatan pemilik repo.
 `max` = setelan tertinggi, terpakai di seluruh baris Freebuff (2 baris), seluruh
-baris ZCode (2 baris), satu baris OpenCode (`fledge-alpha-opencode`), serta dua baris
-CodeBuddy (`GLM-5.3-Codebuddy` dan `Kimi-K2.8-Codebuddy`).
+baris ZCode (2 baris), satu baris OpenCode (`fledge-alpha-opencode`), dua baris
+CodeBuddy (`GLM-5.3-Codebuddy` dan `Kimi-K2.8-Codebuddy`), serta satu baris
+DeepSeek Harness (`deepseek-v4.1-flash-1017-dsh`).
 GLM 5.3 di ZCode awalnya ditulis `TBD` karena pemilik repo cuma ingat "tertinggi",
 lalu diisi `max` setelah katalog model menunjukkan tingkatan tertinggi GLM 5.3
 memang `max`; GLM 5.3 CodeBuddy dan Kimi K2.8 CodeBuddy dikonfirmasi pemilik repo
-memakai reasoning `max`.
+memakai reasoning `max`, begitu juga DeepSeek v4.1 Flash 1017 di DeepSeek Harness.
 `medium` = setelan tengah, terpakai di satu baris Cursor (`opus-5.5-cursor`).
 Grok 4.7 awalnya masuk aturan Cursor `medium`, lalu diganti `xhigh` lewat koreksi
 pemilik repo, jadi baris Cursor tidak seragam.
@@ -106,6 +108,7 @@ model baru: pilih akhiran folder dulu, harness dan provider ikut sendiri.
 | `-codebuddy` / `-Codebuddy` | CodeBuddy | CodeBuddy |
 | `-coreweave` | tidak tertulis, dari catatan sesi: OpenCode | CoreWeave |
 | `-freebuff` | Freebuff | Freebuff |
+| `-dsh` | tidak tertulis, dari catatan sesi: DeepSeek Harness | DeepSeek |
 | tanpa akhiran | tidak tertulis | sesuai model |
 
 ## Sumber yang sudah dicek
@@ -167,13 +170,13 @@ Tiga baris pertama yang membuat klaim "effort tidak terekam di mana pun" di vers
 awal catatan ini perlu diperbaiki: untuk harness opencode datanya ada, tinggal
 dibaca. Untuk harness lain, sebagian nilainya masih dari catatan sesi pemilik repo.
 
-Kolom Effort sekarang terisi seluruhnya, 35 baris. Sebelas di antaranya dari
+Kolom Effort sekarang terisi seluruhnya, 36 baris. Sebelas di antaranya dari
 berkas di mesin ini, sisanya dari catatan sesi pemilik repo. Tidak ada lagi baris
 `TBD`.
 
 ## Selisih folder dan `models.json`
 
-35 folder model di repo (ditambah symlink `Gemini-4-Argon-Antigravity`), 30 terdaftar di `aggregator/models.json`. Lima folder
+36 folder model di repo (ditambah symlink `Gemini-4-Argon-Antigravity`), 31 terdaftar di `aggregator/models.json`. Lima folder
 belum punya entri konsol:
 
 - `gemini-3.1-pro-antigraivty`
@@ -190,6 +193,8 @@ terdaftar di port 5128.
 terdaftar di port 5129 (`glm-5.3-codebuddy`).
 `Kimi-K2.8-Codebuddy` sekarang sudah berisi source Pocket World lengkap dan
 terdaftar di port 5130 (`kimi-k2.8-codebuddy`).
+`deepseek-v4.1-flash-1017-dsh` sekarang sudah berisi source Pocket World lengkap dan
+terdaftar di port 5131.
 
 Dua hal kecil yang ketemu waktu mencatat:
 

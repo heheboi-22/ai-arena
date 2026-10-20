@@ -1,5 +1,5 @@
 # ==============================================================================
-# AI Arena: one image, one container, 31 processes
+# AI Arena: one image, one container, 32 processes
 # ==============================================================================
 #   docker compose up -d --build     then open http://localhost:8080/
 #
@@ -268,6 +268,14 @@ RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no
 COPY Kimi-K2.8-Codebuddy/ ./
 RUN npm run build \
  && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+# 5131  deepseek-v4.1-flash-1017-dsh
+FROM ${NODE_IMAGE} AS m-deepseek-v4.1-flash-1017-dsh
+WORKDIR /src
+COPY deepseek-v4.1-flash-1017-dsh/package.json deepseek-v4.1-flash-1017-dsh/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY deepseek-v4.1-flash-1017-dsh/ ./
+RUN npm run build \
+ && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
 
 # ==============================================================================
 # Stage: supervisord program per model, straight from models.json
@@ -318,6 +326,7 @@ COPY --from=m-kimi-k3-workbuddy /out /srv/models/kimi-k3-workbuddy
 COPY --from=m-gemini-4-argon-antigravity /out /srv/models/gemini-4-argon-antigravity
 COPY --from=m-glm-5.3-codebuddy /out /srv/models/glm-5.3-codebuddy
 COPY --from=m-kimi-k2.8-codebuddy /out /srv/models/kimi-k2.8-codebuddy
+COPY --from=m-deepseek-v4.1-flash-1017-dsh /out /srv/models/deepseek-v4.1-flash-1017-dsh
 
 # Installed at /etc/supervisord.conf on purpose: that is the first path
 # supervisorctl searches, so `supervisorctl status` inside the container works

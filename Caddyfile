@@ -48,6 +48,7 @@
 	import route_model gemini-4-argon-antigravity 5128
 	import route_model glm-5.3-codebuddy 5129
 	import route_model kimi-k2.8-codebuddy 5130
+	import route_model deepseek-v4.1-flash-1017-dsh 5131
 
 	# --------------------------------------------------------------------------
 	# Aggregator Dashboard & Static Assets

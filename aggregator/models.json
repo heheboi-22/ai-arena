@@ -267,5 +267,14 @@
     "path": "/kimi-k2.8-codebuddy/",
     "tag": "Moonshot AI",
     "color": "#0891B2"
+  },
+  {
+    "id": "deepseek-v4.1-flash-1017-dsh",
+    "name": "DeepSeek v4.1 Flash 1017 (DeepSeek Harness)",
+    "port": 5131,
+    "fallbackPort": null,
+    "path": "/deepseek-v4.1-flash-1017-dsh/",
+    "tag": "DeepSeek",
+    "color": "#2563EB"
   }
 ]
