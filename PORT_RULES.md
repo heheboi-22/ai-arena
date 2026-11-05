@@ -41,6 +41,11 @@ Setiap agen model AI menjalankan dev server atau preview server-nya pada port be
 | 29 | `glm-5.3-codebuddy` | GLM 5.3 (CodeBuddy) | **5129** | `npx serve -s -l 5129 dist` |
 | 30 | `kimi-k2.8-codebuddy` | Kimi K2.8 (CodeBuddy) | **5130** | `npx serve -s -l 5130 dist` |
 | 31 | `deepseek-v4.1-flash-1017-dsh` | DeepSeek v4.1 Flash 1017 (DeepSeek Harness) | **5131** | `npx serve -s -l 5131 dist` |
+| 36 | `deepseek-v4.1-flash-1017-coreweave` | DeepSeek v4.1 Flash 1017 (CoreWeave) | **5136** | `npx serve -s -l 5136 dist` |
+
+> [!NOTE]
+> Nomor 32-35 (port 5132-5135) sudah dialokasikan di working tree untuk model
+> yang belum ikut commit ini, jadi tabel sengaja melompat dari 31 ke 36.
 
 > [!TIP]
 > **Formula Port**: `5100 + Nomor Urut Model`.
@@ -98,11 +103,11 @@ Pengganti `arena.sh` yang tidak butuh node, tmux, atau caddy di host. Semua
 model dibangun di dalam **satu** image (multi-stage: `npm ci` → `vite build`
 untuk tiap folder), lalu dijalankan di dalam **satu** container oleh supervisord:
 Caddy sebagai router di `:8080` plus satu static server (`busybox httpd`) per
-model di `127.0.0.1:5101-5131`, port yang sama dengan tabel di atas.
+model di `127.0.0.1:5101-5131` dan `5136`, port yang sama dengan tabel di atas.
 
 ```bash
 docker compose up -d --build             # bangun + jalankan
-docker compose exec arena supervisorctl status   # 32 proses: caddy + 31 static
+docker compose exec arena supervisorctl status   # 33 proses: caddy + 32 static
 docker compose logs -f arena             # log router + event supervisord
 docker compose down                      # hentikan
 ```
@@ -115,7 +120,7 @@ docker compose down                      # hentikan
   berubah, jadi mengubah satu model membangun ulang model itu saja, dan
   mengubah dashboard, dokumen, atau Caddyfile tidak membangun ulang model mana
   pun. Unduhan npm disimpan di cache mount BuildKit yang dipakai bersama oleh
-  31 model, jadi `npm ci` yang memang harus jalan pun cuma hitungan detik.
+  32 model, jadi `npm ci` yang memang harus jalan pun cuma hitungan detik.
 - Hanya `:8080` yang di-publish. Static server model bind ke loopback di dalam
   container dan hanya bisa dijangkau Caddy, jadi angka port di tabel atas
   berlaku di dua tempat: mode lokal (host) dan di dalam container.

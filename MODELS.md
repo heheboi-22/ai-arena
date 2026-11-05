@@ -27,6 +27,7 @@ tidak menyebut harness sama sekali. Kolom provider sudah terisi semua.
 | DeepSeek v4.1 Flash | DeepSeek | default | OpenCode | CoreWeave | `deepseek-v4.1-flash-coreweave` |
 | DeepSeek v4.1 Flash | DeepSeek | max | Freebuff | Freebuff | `deepseek-v4.1-flash-freebuff` |
 | DeepSeek v4.1 Flash 1017 | DeepSeek | max | DeepSeek Harness | DeepSeek | `deepseek-v4.1-flash-1017-dsh` |
+| DeepSeek v4.1 Flash 1017 | DeepSeek | default | OpenCode | CoreWeave | `deepseek-v4.1-flash-1017-coreweave` |
 | Fledge Alpha | Fledge | max | OpenCode | OpenCode | `fledge-alpha-opencode` |
 | Gemini 3.1 Pro | Google * | high | Google Antigravity | Google | `gemini-3.1-pro-antigraivty` |
 | Gemini 3.7 Flash | Google | high | Google Antigravity | Google | `gemini-3.7-flash` |
@@ -170,13 +171,13 @@ Tiga baris pertama yang membuat klaim "effort tidak terekam di mana pun" di vers
 awal catatan ini perlu diperbaiki: untuk harness opencode datanya ada, tinggal
 dibaca. Untuk harness lain, sebagian nilainya masih dari catatan sesi pemilik repo.
 
-Kolom Effort sekarang terisi seluruhnya, 36 baris. Sebelas di antaranya dari
+Kolom Effort sekarang terisi seluruhnya, 37 baris. Sebelas di antaranya dari
 berkas di mesin ini, sisanya dari catatan sesi pemilik repo. Tidak ada lagi baris
 `TBD`.
 
 ## Selisih folder dan `models.json`
 
-36 folder model di repo (ditambah symlink `Gemini-4-Argon-Antigravity`), 31 terdaftar di `aggregator/models.json`. Lima folder
+37 folder model di repo (ditambah symlink `Gemini-4-Argon-Antigravity`), 32 terdaftar di `aggregator/models.json`. Lima folder
 belum punya entri konsol:
 
 - `gemini-3.1-pro-antigraivty`

@@ -49,6 +49,7 @@
 	import route_model glm-5.3-codebuddy 5129
 	import route_model kimi-k2.8-codebuddy 5130
 	import route_model deepseek-v4.1-flash-1017-dsh 5131
+	import route_model deepseek-v4.1-flash-1017-coreweave 5136
 
 	# --------------------------------------------------------------------------
 	# Aggregator Dashboard & Static Assets

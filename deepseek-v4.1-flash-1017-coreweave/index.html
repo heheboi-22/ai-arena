@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#141c16" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2318211a'/%3E%3Cpath d='M5 15c3-3 7-4 11-4s7 1 11 4c-2 3-7 4-11 4S7 18 5 15Z' fill='%23edb166'/%3E%3Cpath d='M8 18c2 3 4 5 6 6 2 1 3-1 4-1 2 0 3 2 5 0 1-1 2-3 3-5' fill='%23a99a80'/%3E%3C/svg%3E"
+    />
+    <meta
+      name="description"
+      content="Pocket World is a small floating island with a cottage, a pond, a windmill, and a full day of weather."
+    />
+    <title>Pocket World</title>
+  </head>
+  <body>
+    <svg class="symbol-store" aria-hidden="true" focusable="false">
+      <defs>
+        <symbol id="mark-island" viewBox="0 0 48 48">
+          <path d="M6.5 21.5c4.4-5.3 11.4-7.6 17.6-7.6 6.1 0 13.2 2.2 17.4 6.9-3.2 4.2-9.5 6.5-17.3 6.5-8.3 0-14.4-2.2-17.7-5.8Z" />
+          <path d="M10.7 25.7c1.7 4.1 4.5 7.4 7.5 9.8 2.4 1.9 4.2.1 6.1-1.1 2.2-1.3 3.9 2.6 6.3.8 2.9-2.2 5.4-5.8 6.6-9.2" />
+          <path d="M18.2 19.4v-5.2h6.4v4.2" />
+          <path d="M24.6 14.2 28 10.7l4 3.5v4.3" />
+          <path d="M14.6 20.9h2M22 20.9h2M35 20.9h2" />
+        </symbol>
+        <symbol id="icon-sun" viewBox="0 0 20 20">
+          <circle cx="10" cy="10" r="3.2" />
+          <path d="M10 2.2v2M10 15.8v2M2.2 10h2M15.8 10h2M4.5 4.5l1.4 1.4M14.1 14.1l1.4 1.4M15.5 4.5l-1.4 1.4M5.9 14.1l-1.4 1.4" />
+        </symbol>
+        <symbol id="icon-rain" viewBox="0 0 20 20">
+          <path d="M5.5 12.6h8.8c1.7 0 3-1.3 3-2.9s-1.3-2.9-3-2.9h-.4A4.1 4.1 0 0 0 6 7.8a2.5 2.5 0 0 0-.5 4.8Z" />
+          <path d="m7 15.3-.8 1.8M10.4 15.3l-.8 1.8M13.8 15.3l-.8 1.8" />
+        </symbol>
+        <symbol id="icon-reset" viewBox="0 0 20 20">
+          <path d="M4.1 8.4a6.3 6.3 0 1 1-.3 3.2" />
+          <path d="M4 4.4v4.2h4.2" />
+        </symbol>
+        <symbol id="icon-chevron" viewBox="0 0 20 20">
+          <path d="m5.8 7.8 4.2 4.4 4.2-4.4" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <div id="app">
+      <div id="stage" class="stage" aria-hidden="true"></div>
+      <div class="vignette" aria-hidden="true"></div>
+
+      <main class="shell">
+        <p class="sr-only">
+          A small floating island in a wide sky: a cream cottage with a smoking chimney, a
+          working windmill, a quiet pond with a rowboat, and a cluster of trees above a
+          sculpted rock underside. Use the controls to change the time of day, weather, wind
+          strength, and cottage lights. Drag the world to orbit and scroll or pinch to zoom.
+        </p>
+        <section class="panel" id="panel" aria-label="Pocket World controls">
+          <header class="masthead">
+            <span class="masthead__mark" aria-hidden="true">
+              <svg viewBox="0 0 48 48"><use href="#mark-island"></use></svg>
+            </span>
+            <div class="masthead__text">
+              <h1>Pocket World</h1>
+              <p>A little island, made by hand.</p>
+              <p class="panel-summary" id="panel-summary">16:00 · Clear · Light breeze</p>
+            </div>
+            <button
+              type="button"
+              class="panel-toggle"
+              id="panel-toggle"
+              aria-expanded="false"
+              aria-controls="panel-body"
+            >
+              <span class="panel-toggle__label" id="panel-toggle-label">Controls</span>
+              <svg class="icon panel-toggle__icon" viewBox="0 0 20 20" aria-hidden="true">
+                <use href="#icon-chevron"></use>
+              </svg>
+            </button>
+          </header>
+
+          <div class="panel-body" id="panel-body">
+            <div class="control">
+              <div class="control-head">
+                <label class="control-label" for="time-range">Time</label>
+                <output class="readout" id="time-output" for="time-range" aria-live="off">
+                  <span class="readout__value" id="time-clock">16:00</span>
+                  <span class="readout__note" id="time-phase">Afternoon</span>
+                </output>
+              </div>
+              <input
+                class="range range--time"
+                id="time-range"
+                type="range"
+                min="0"
+                max="1440"
+                step="5"
+                value="960"
+                aria-label="Time of day"
+              />
+              <div class="ticks" aria-hidden="true">
+                <span>00</span><span>06</span><span>12</span><span>18</span><span>24</span>
+              </div>
+            </div>
+
+            <div class="control-pair">
+              <fieldset class="control weather">
+                <legend class="control-label">Weather</legend>
+                <div class="segmented">
+                  <button
+                    type="button"
+                    class="segmented__button is-active"
+                    data-weather="clear"
+                    aria-pressed="true"
+                  >
+                    <svg class="icon" viewBox="0 0 20 20" aria-hidden="true">
+                      <use href="#icon-sun"></use>
+                    </svg>
+                    Clear
+                  </button>
+                  <button
+                    type="button"
+                    class="segmented__button"
+                    data-weather="rain"
+                    aria-pressed="false"
+                  >
+                    <svg class="icon" viewBox="0 0 20 20" aria-hidden="true">
+                      <use href="#icon-rain"></use>
+                    </svg>
+                    Rain
+                  </button>
+                </div>
+              </fieldset>
+
+              <div class="control lights">
+                <span class="control-label" id="lights-label">House lights</span>
+                <button
+                  type="button"
+                  class="switch"
+                  id="lights-toggle"
+                  role="switch"
+                  aria-checked="false"
+                  aria-labelledby="lights-label lights-state"
+                >
+                  <span class="switch__track" aria-hidden="true">
+                    <span class="switch__thumb"></span>
+                  </span>
+                  <span class="switch__state" id="lights-state">Off</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="control">
+              <div class="control-head">
+                <label class="control-label" for="wind-range">Wind</label>
+                <output class="readout" id="wind-output" for="wind-range" aria-live="off">
+                  <span class="readout__value" id="wind-percent">30%</span>
+                  <span class="readout__note" id="wind-label">Light breeze</span>
+                </output>
+              </div>
+              <input
+                class="range range--wind"
+                id="wind-range"
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value="30"
+                aria-label="Wind strength"
+              />
+            </div>
+
+            <div class="panel-foot">
+              <button type="button" class="reset" id="reset-button">
+                <svg class="icon reset__icon" viewBox="0 0 20 20" aria-hidden="true">
+                  <use href="#icon-reset"></use>
+                </svg>
+                Reset the world
+              </button>
+              <p class="guidance">
+                Drag to orbit. Scroll or pinch to zoom. Click or tap the cottage to light it.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <div class="boot" id="boot" role="status" aria-live="polite">
+        <div class="boot__inner">
+          <span class="boot__mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48"><use href="#mark-island"></use></svg>
+          </span>
+          <p class="boot__title">Pocket World</p>
+          <p class="boot__note">Setting the island in place</p>
+          <span class="boot__track" aria-hidden="true"><span class="boot__fill"></span></span>
+        </div>
+      </div>
+
+      <div class="fatal" id="fatal" role="alert" hidden>
+        <div class="fatal__card">
+          <span class="fatal__mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48"><use href="#mark-island"></use></svg>
+          </span>
+          <h2>The island could not open</h2>
+          <p id="fatal-detail">
+            This browser could not start the 3D view. Try reloading the page, or enable hardware
+            acceleration in a current browser.
+          </p>
+          <button type="button" class="reset" id="fatal-retry">Reload the page</button>
+        </div>
+      </div>
+
+      <noscript>
+        <div class="fatal fatal--static">
+          <div class="fatal__card">
+            <h2>Pocket World needs JavaScript</h2>
+            <p>Turn on JavaScript to step onto the island.</p>
+          </div>
+        </div>
+      </noscript>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

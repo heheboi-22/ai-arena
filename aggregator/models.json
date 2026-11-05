@@ -276,5 +276,14 @@
     "path": "/deepseek-v4.1-flash-1017-dsh/",
     "tag": "DeepSeek",
     "color": "#2563EB"
+  },
+  {
+    "id": "deepseek-v4.1-flash-1017-coreweave",
+    "name": "DeepSeek v4.1 Flash 1017 (CoreWeave)",
+    "port": 5136,
+    "fallbackPort": null,
+    "path": "/deepseek-v4.1-flash-1017-coreweave/",
+    "tag": "DeepSeek",
+    "color": "#2563EB"
   }
 ]
