@@ -1,5 +1,5 @@
 # ==============================================================================
-# AI Arena: one image, one container, 32 processes
+# AI Arena: one image, one container, 33 processes
 # ==============================================================================
 #   docker compose up -d --build     then open http://localhost:8080/
 #
@@ -276,6 +276,14 @@ RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no
 COPY deepseek-v4.1-flash-1017-dsh/ ./
 RUN npm run build \
  && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+# 5132  claude-fable-5.2-claude
+FROM ${NODE_IMAGE} AS m-claude-fable-5.2-claude
+WORKDIR /src
+COPY claude-fable-5.2-claude/package.json claude-fable-5.2-claude/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY claude-fable-5.2-claude/ ./
+RUN npm run build \
+ && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
 
 # ==============================================================================
 # Stage: supervisord program per model, straight from models.json
@@ -327,6 +335,7 @@ COPY --from=m-gemini-4-argon-antigravity /out /srv/models/gemini-4-argon-antigra
 COPY --from=m-glm-5.3-codebuddy /out /srv/models/glm-5.3-codebuddy
 COPY --from=m-kimi-k2.8-codebuddy /out /srv/models/kimi-k2.8-codebuddy
 COPY --from=m-deepseek-v4.1-flash-1017-dsh /out /srv/models/deepseek-v4.1-flash-1017-dsh
+COPY --from=m-claude-fable-5.2-claude /out /srv/models/claude-fable-5.2-claude
 
 # Installed at /etc/supervisord.conf on purpose: that is the first path
 # supervisorctl searches, so `supervisorctl status` inside the container works

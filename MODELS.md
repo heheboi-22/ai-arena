@@ -18,6 +18,7 @@ tidak menyebut harness sama sekali. Kolom provider sudah terisi semua.
 
 | Model | From (pembuat) | Effort | Harness | Provider (inference) | Folder |
 |:--|:--|:--|:--|:--|:--|
+| Claude Fable 5.2 | Anthropic | medium | Claude Code | Anthropic | `claude-fable-5.2-claude` |
 | Claude Haiku 5.5 | Anthropic | xhigh | Claude Code | Anthropic | `claude-haiku-5.5-claude` |
 | Claude Opus 4.6 | Anthropic | default | Google Antigravity | Google | `claude-opus-4.6-antigravity` |
 | Claude Opus 5.5 | Anthropic | xhigh | Claude Code | Anthropic | `claude-opus-5.5-claude` |
@@ -78,9 +79,11 @@ GLM 5.3 di ZCode awalnya ditulis `TBD` karena pemilik repo cuma ingat "tertinggi
 lalu diisi `max` setelah katalog model menunjukkan tingkatan tertinggi GLM 5.3
 memang `max`; GLM 5.3 CodeBuddy dan Kimi K2.8 CodeBuddy dikonfirmasi pemilik repo
 memakai reasoning `max`, begitu juga DeepSeek v4.1 Flash 1017 di DeepSeek Harness.
-`medium` = setelan tengah, terpakai di satu baris Cursor (`opus-5.5-cursor`).
+`medium` = setelan tengah, terpakai di satu baris Cursor (`opus-5.5-cursor`) dan
+satu baris Claude Code (`claude-fable-5.2-claude`).
 Grok 4.7 awalnya masuk aturan Cursor `medium`, lalu diganti `xhigh` lewat koreksi
-pemilik repo, jadi baris Cursor tidak seragam.
+pemilik repo, jadi baris Cursor tidak seragam. Fable 5.2 sengaja tetap `medium`
+walaupun tiga baris Claude Code lain memakai `xhigh`.
 `?` = tidak ada jejaknya di repo.
 Provider di baris `claude-opus-4.6-antigravity` berisi Google, bukan Anthropic,
 karena model itu dilayani lewat Antigravity, bukan lewat Anthropic langsung.
@@ -170,13 +173,13 @@ Tiga baris pertama yang membuat klaim "effort tidak terekam di mana pun" di vers
 awal catatan ini perlu diperbaiki: untuk harness opencode datanya ada, tinggal
 dibaca. Untuk harness lain, sebagian nilainya masih dari catatan sesi pemilik repo.
 
-Kolom Effort sekarang terisi seluruhnya, 36 baris. Sebelas di antaranya dari
+Kolom Effort sekarang terisi seluruhnya, 37 baris. Sebelas di antaranya dari
 berkas di mesin ini, sisanya dari catatan sesi pemilik repo. Tidak ada lagi baris
 `TBD`.
 
 ## Selisih folder dan `models.json`
 
-36 folder model di repo (ditambah symlink `Gemini-4-Argon-Antigravity`), 31 terdaftar di `aggregator/models.json`. Lima folder
+37 folder model di repo (ditambah symlink `Gemini-4-Argon-Antigravity`), 32 terdaftar di `aggregator/models.json`. Lima folder
 belum punya entri konsol:
 
 - `gemini-3.1-pro-antigraivty`
@@ -195,6 +198,8 @@ terdaftar di port 5129 (`glm-5.3-codebuddy`).
 terdaftar di port 5130 (`kimi-k2.8-codebuddy`).
 `deepseek-v4.1-flash-1017-dsh` sekarang sudah berisi source Pocket World lengkap dan
 terdaftar di port 5131.
+`claude-fable-5.2-claude` sekarang sudah berisi source Pocket World lengkap dan
+terdaftar di port 5132.
 
 Dua hal kecil yang ketemu waktu mencatat:
 

@@ -276,5 +276,14 @@
     "path": "/deepseek-v4.1-flash-1017-dsh/",
     "tag": "DeepSeek",
     "color": "#2563EB"
+  },
+  {
+    "id": "claude-fable-5.2-claude",
+    "name": "Claude Fable 5.2 (Claude)",
+    "port": 5132,
+    "fallbackPort": null,
+    "path": "/claude-fable-5.2-claude/",
+    "tag": "Anthropic",
+    "color": "#D97757"
   }
 ]
