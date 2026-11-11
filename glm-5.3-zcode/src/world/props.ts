@@ -1,118 +1,149 @@
 import * as THREE from 'three';
-import { M } from './materials';
-import { LAYOUT } from './layout';
-import { mulberry32 } from '../lib/math';
-import type { Frame } from '../lib/frame';
-import type { Island } from './island';
+import { makeRng } from '../lib/math';
+import { WORLD } from '../palette';
+import { PATHS, FENCE, ROCKS, LAMP, BENCH } from './layout';
+import { rimRadius } from './island';
+import type { SharedMaterials } from './materials';
+
+const stemMat = new THREE.MeshStandardMaterial({ color: WORLD.cream, roughness: 0.9 });
 
 export interface Props {
   group: THREE.Group;
-  update(f: Frame): void;
+  /** lamp follows the house-light state */
+  update: (dt: number, lights: number, night: number) => void;
 }
 
-interface Bobber {
-  mesh: THREE.Mesh;
-  baseY: number;
-  phase: number;
+function quadBezier(a: number, c: number, b: number, t: number): number {
+  const u = 1 - t;
+  return u * u * a + 2 * u * t * c + t * t * b;
 }
 
-/** Restrained set dressing: path, fence, flowers, rocks, and drifting stones. */
-export function makeProps(island: Island): Props {
+export function createProps(
+  mats: SharedMaterials,
+  groundY: (x: number, z: number) => number,
+): Props {
   const group = new THREE.Group();
-  const rand = mulberry32(3131);
-  const bobbers: Bobber[] = [];
-  const topY = island.topY;
+  const rng = makeRng(31337);
 
-  const solid = (mesh: THREE.Mesh) => {
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    group.add(mesh);
-    return mesh;
-  };
-
-  // --- stepping stones from the porch toward the pond ---------------------------
-  const stoneGeo = new THREE.CylinderGeometry(0.2, 0.24, 0.07, 7);
-  const from = new THREE.Vector2(-1.35, -0.05);
-  const to = new THREE.Vector2(1.8, 1.3);
-  for (const t of [0.04, 0.26, 0.48, 0.7, 0.9]) {
-    const px = from.x + (to.x - from.x) * t + (rand() - 0.5) * 0.3;
-    const pz = from.y + (to.y - from.y) * t + (rand() - 0.5) * 0.3;
-    const s = 0.85 + rand() * 0.4;
-    const stone = solid(new THREE.Mesh(stoneGeo, M.stone));
-    stone.position.set(px, topY(px, pz) + 0.01, pz);
-    stone.scale.set(s, 1, s);
-    stone.rotation.y = rand() * Math.PI;
-  }
-
-  // --- fence arc along the front rim ----------------------------------------------
-  const postGeo = new THREE.BoxGeometry(0.1, 0.55, 0.1);
-  const railGeo = new THREE.BoxGeometry(1, 0.05, 0.035); // scaled to length per span
-  const R = 6.1;
-  const angles = [0.3, 0.52, 0.74, 0.96, 1.18];
-  const posts = angles.map((a) => new THREE.Vector3(Math.cos(a) * R, topY(Math.cos(a) * R, Math.sin(a) * R), Math.sin(a) * R));
-  for (const p of posts) {
-    const post = solid(new THREE.Mesh(postGeo, M.woodDark));
-    post.position.set(p.x, p.y + 0.22, p.z);
-  }
-  for (let i = 0; i < posts.length - 1; i++) {
-    const a = posts[i];
-    const b = posts[i + 1];
-    const dx = b.x - a.x;
-    const dz = b.z - a.z;
-    const len = Math.hypot(dx, dz);
-    const yaw = -Math.atan2(dz, dx);
-    for (const h of [0.34, 0.5]) {
-      const rail = solid(new THREE.Mesh(railGeo, M.woodMid));
-      rail.scale.x = len + 0.08;
-      rail.position.set((a.x + b.x) / 2, (a.y + b.y) / 2 + h, (a.z + b.z) / 2);
-      rail.rotation.y = yaw;
-      rail.position.y += 0.22;
+  // stepping stones along the two paths
+  const stoneGeo = new THREE.CylinderGeometry(1, 0.92, 0.06, 7);
+  for (const path of PATHS) {
+    for (let i = 0; i < path.n; i++) {
+      const t = (i + 0.5) / path.n;
+      const x = quadBezier(path.from[0], path.ctrl[0], path.to[0], t);
+      const z = quadBezier(path.from[1], path.ctrl[1], path.to[1], t);
+      const stone = new THREE.Mesh(stoneGeo, mats.stone);
+      const s = 0.15 + rng() * 0.07;
+      stone.scale.set(s, 1, s * (0.75 + rng() * 0.4));
+      stone.rotation.y = rng() * Math.PI;
+      stone.position.set(x, groundY(x, z) + 0.03, z);
+      stone.castShadow = false;
+      stone.receiveShadow = true;
+      group.add(stone);
     }
   }
 
-  // --- flowers ----------------------------------------------------------------------
-  const stemGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.17, 5);
-  const headGeo = new THREE.IcosahedronGeometry(0.05, 0);
-  const anchors: Array<[number, number]> = [
-    [-1.25, 0.75], [-0.6, 1.1], [0.6, 0.3], [3.9, 0.55],
-    [1.5, 3.0], [-3.1, -1.5], [0.1, -3.4],
-  ];
-  let fi = 0;
-  for (const [ax, az] of anchors) {
-    for (let k = 0; k < 2; k++) {
-      const px = ax + (rand() - 0.5) * 0.7;
-      const pz = az + (rand() - 0.5) * 0.7;
-      const stem = solid(new THREE.Mesh(stemGeo, M.flowerStem));
-      stem.position.set(px, topY(px, pz) + 0.08, pz);
-      const head = solid(new THREE.Mesh(headGeo, M.flowers[fi++ % M.flowers.length]));
-      head.position.set(px, topY(px, pz) + 0.18, pz);
+  // post-and-rail fence following the front-right rim
+  const posts: THREE.Vector3[] = [];
+  for (let i = 0; i < FENCE.posts; i++) {
+    const t = FENCE.from + (FENCE.to - FENCE.from) * (i / (FENCE.posts - 1));
+    const rim = rimRadius(t) - FENCE.inset;
+    posts.push(new THREE.Vector3(Math.cos(t) * rim, 0, Math.sin(t) * rim));
+  }
+  const postGeo = new THREE.BoxGeometry(0.06, 0.4, 0.06);
+  posts.forEach((p, i) => {
+    const post = new THREE.Mesh(postGeo, mats.wood);
+    post.position.set(p.x, groundY(p.x, p.z) + 0.2, p.z);
+    post.rotation.z = Math.sin(i * 1.7) * 0.04;
+    post.castShadow = true;
+    group.add(post);
+    if (i < posts.length - 1) {
+      const next = posts[i + 1];
+      const mid = new THREE.Vector3().addVectors(p, next).multiplyScalar(0.5);
+      const len = p.distanceTo(next);
+      // box long axis is X: yaw so +X points toward the next post
+      const yaw = Math.atan2(-(next.z - p.z), next.x - p.x);
+      for (const h of [0.14, 0.3]) {
+        const rail = new THREE.Mesh(new THREE.BoxGeometry(len, 0.05, 0.04), mats.woodDark);
+        rail.position.set(mid.x, groundY(mid.x, mid.z) + h + 0.06, mid.z);
+        rail.rotation.y = yaw;
+        rail.castShadow = true;
+        group.add(rail);
+      }
     }
+  });
+
+  // scattered boulders
+  const rockGeo = new THREE.DodecahedronGeometry(1, 0);
+  for (const r of ROCKS) {
+    const rock = new THREE.Mesh(rockGeo, rng() > 0.5 ? mats.rock : mats.rockDeep);
+    rock.scale.set(r.s, r.s * (0.6 + rng() * 0.25), r.s * (0.8 + rng() * 0.3));
+    rock.rotation.set(rng() * 0.6, r.rot, rng() * 0.5);
+    rock.position.set(r.x, groundY(r.x, r.z) + r.s * 0.28, r.z);
+    rock.castShadow = rock.receiveShadow = true;
+    group.add(rock);
   }
 
-  // --- rocks and drifting stones -------------------------------------------------------
-  const rockGeo = new THREE.IcosahedronGeometry(1, 0);
-  for (const r of LAYOUT.rocks) {
-    const rock = solid(new THREE.Mesh(rockGeo, M.stone));
-    rock.position.set(r.x, topY(r.x, r.z) + r.scale * 0.15, r.z);
-    rock.scale.set(r.scale, r.scale * 0.72, r.scale * 0.85);
-    rock.rotation.set(rand() * 0.4, rand() * Math.PI, rand() * 0.4);
+  // a tiny bench facing the pond
+  const bench = new THREE.Group();
+  const seat = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.04, 0.16), mats.wood);
+  seat.position.y = 0.16;
+  const back = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.14, 0.03), mats.wood);
+  back.position.set(0, 0.26, -0.07);
+  const legGeo = new THREE.BoxGeometry(0.04, 0.16, 0.12);
+  for (const lx of [-0.18, 0.18]) {
+    const leg = new THREE.Mesh(legGeo, mats.woodDark);
+    leg.position.set(lx, 0.08, 0);
+    bench.add(leg);
   }
-  for (const fl of LAYOUT.floaters) {
-    const rock = solid(new THREE.Mesh(rockGeo, M.stoneDark));
-    rock.position.set(fl.x, fl.y, fl.z);
-    rock.scale.setScalar(fl.scale);
-    rock.rotation.set(rand(), rand() * Math.PI, rand());
-    bobbers.push({ mesh: rock, baseY: fl.y, phase: fl.phase });
+  bench.add(seat, back);
+  bench.traverse((o) => {
+    if (o instanceof THREE.Mesh) o.castShadow = true;
+  });
+  bench.position.set(BENCH.x, groundY(BENCH.x, BENCH.z), BENCH.z);
+  bench.rotation.y = BENCH.rot;
+  group.add(bench);
+
+  // two mushrooms tucked by the back tree
+  const capMat = new THREE.MeshStandardMaterial({ color: 0xc65b4e, roughness: 0.8 });
+  for (const [mx, mz, ms] of [[-0.2, -3.3, 1.0], [0.05, -3.15, 0.7]] as const) {
+    const stemM = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.04, 0.1, 6), stemMat);
+    stemM.position.set(mx, groundY(mx, mz) + 0.05, mz);
+    const capM = new THREE.Mesh(new THREE.SphereGeometry(0.075, 8, 5, 0, Math.PI * 2, 0, Math.PI / 2), capMat);
+    capM.scale.set(ms, ms * 0.7, ms);
+    capM.position.set(mx, groundY(mx, mz) + 0.1, mz);
+    group.add(stemM, capM);
   }
+
+  // the street lamp outside the house, tied to the house lights
+  const lampGroup = new THREE.Group();
+  lampGroup.position.set(LAMP.x, groundY(LAMP.x, LAMP.z), LAMP.z);
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.04, 0.9, 7), mats.woodDark);
+  pole.position.y = 0.45;
+  pole.castShadow = true;
+  const arm = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.035, 0.035), mats.woodDark);
+  arm.position.set(0.09, 0.9, 0);
+  const cage = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.16, 0.12), mats.woodDark);
+  cage.position.set(0.19, 0.8, 0);
+  const bulbMat = new THREE.MeshStandardMaterial({
+    color: 0x776a4e,
+    emissive: WORLD.lampGlow,
+    emissiveIntensity: 0,
+    roughness: 0.5,
+  });
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 6), bulbMat);
+  bulb.position.set(0.19, 0.79, 0);
+  lampGroup.add(pole, arm, cage, bulb);
+  const lampLight = new THREE.PointLight(WORLD.lampGlow, 0, 5, 2);
+  lampLight.position.set(0.19, 0.85, 0);
+  lampGroup.add(lampLight);
+  group.add(lampGroup);
 
   return {
     group,
-    update(f: Frame) {
-      const motion = f.reducedMotion ? 0.3 : 1;
-      for (const b of bobbers) {
-        b.mesh.position.y = b.baseY + Math.sin(f.time * 0.5 * motion + b.phase) * 0.2 * motion;
-        b.mesh.rotation.y += f.dt * 0.05 * motion;
-      }
+    update(_dt, lights, night) {
+      bulbMat.emissiveIntensity = lights * (1.5 + 1.6 * night);
+      lampLight.intensity = lights * (0.35 + 0.85 * night);
     },
   };
 }

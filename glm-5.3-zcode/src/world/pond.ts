@@ -1,93 +1,107 @@
 import * as THREE from 'three';
-import { M } from './materials';
-import { LAYOUT } from './layout';
-import { mulberry32 } from '../lib/math';
-import type { Frame } from '../lib/frame';
-import type { Island } from './island';
+import { WORLD } from '../palette';
+import { POND } from './layout';
+
+const WATER_VERT = /* glsl */ `
+uniform float uTime;
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  vec3 p = position;
+  p.z += 0.035 * sin(p.x * 5.0 + uTime * 1.5) + 0.03 * cos(p.y * 6.0 - uTime * 1.1);
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+}
+`;
+
+const WATER_FRAG = /* glsl */ `
+uniform float uTime;
+uniform float uRain;
+uniform float uNight;
+uniform vec3 uDeep;
+uniform vec3 uShallow;
+uniform vec3 uFoam;
+uniform vec3 uTint;
+varying vec2 vUv;
+void main() {
+  float r = length(vUv - 0.5) * 2.0;
+  vec3 col = mix(uShallow, uDeep, smoothstep(0.3, 0.95, r));
+  float w1 = sin(vUv.x * 9.0 + uTime * 1.2 + sin(vUv.y * 7.0 - uTime * 0.8) * 1.6);
+  float w2 = sin((vUv.x + vUv.y) * 12.0 - uTime * 1.8);
+  float sparkle = smoothstep(0.65, 0.95, w1 * 0.5 + w2 * 0.5 + uRain * 0.25);
+  col += uFoam * sparkle * (0.16 + uRain * 0.3);
+  col = mix(col, col * 0.82 + vec3(0.09, 0.10, 0.12), uRain * 0.4);
+  col *= uTint;
+  gl_FragColor = vec4(col, 0.94);
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
+}
+`;
 
 export interface Pond {
   group: THREE.Group;
-  center: { x: number; z: number };
-  radius: number;
+  /** water surface height in world space (ripples sit just above it) */
   waterY: number;
-  /** Rain drops landing on the water call this. */
-  spawnRipple(x: number, z: number): void;
-  update(f: Frame): void;
+  update: (dt: number, time: number, rain: number, tint: THREE.Color) => void;
 }
 
-const RIPPLE_POOL = 18;
-
-/** A quiet pond in a carved bowl, with a pooled ripple system for rain. */
-export function makePond(island: Island): Pond {
+export function createPond(): Pond {
   const group = new THREE.Group();
-  const { x, z } = LAYOUT.pond;
-  // Water sits above the bowl's deepest point but below the surrounding grade.
-  const waterY = island.topY(x, z) + 0.3;
-  group.position.set(x, waterY, z);
 
-  const sand = new THREE.Mesh(new THREE.CircleGeometry(LAYOUT.pond.shoreRadius, 30), M.sand);
-  sand.rotation.x = -Math.PI / 2;
-  sand.position.y = -0.025;
-  sand.receiveShadow = true;
-  group.add(sand);
+  const uniforms = {
+    uTime: { value: 0 },
+    uRain: { value: 0 },
+    uNight: { value: 0 },
+    uDeep: { value: new THREE.Color(WORLD.waterDeep) },
+    uShallow: { value: new THREE.Color(WORLD.waterShallow) },
+    uFoam: { value: new THREE.Color(WORLD.foam) },
+    uTint: { value: new THREE.Color(0xffffff) },
+  };
 
-  const water = new THREE.Mesh(new THREE.CircleGeometry(LAYOUT.pond.waterRadius, 30), M.water);
+  const water = new THREE.Mesh(
+    new THREE.CircleGeometry(POND.r * 0.92, 44),
+    new THREE.ShaderMaterial({
+      vertexShader: WATER_VERT,
+      fragmentShader: WATER_FRAG,
+      uniforms,
+      transparent: true,
+    }),
+  );
   water.rotation.x = -Math.PI / 2;
-  water.receiveShadow = true;
+  water.position.set(POND.x, POND.waterY, POND.z);
   group.add(water);
 
-  // Shore pebbles for a readable shoreline.
-  const rand = mulberry32(99);
-  const pebbleGeo = new THREE.IcosahedronGeometry(0.09, 0);
-  for (let i = 0; i < 7; i++) {
-    const a = (i / 7) * Math.PI * 2 + rand() * 0.5;
-    const r = LAYOUT.pond.waterRadius + 0.22 + rand() * 0.25;
-    const pebble = new THREE.Mesh(pebbleGeo, M.stoneDark);
-    pebble.position.set(Math.cos(a) * r, 0.02, Math.sin(a) * r);
-    pebble.scale.set(1 + rand(), 0.55, 1 + rand() * 0.6);
-    pebble.rotation.y = rand() * Math.PI;
-    pebble.castShadow = true;
-    group.add(pebble);
+  // lily pads drifting near the far shore
+  const padMat = new THREE.MeshStandardMaterial({ color: 0x3e7d46, roughness: 0.9 });
+  const blossomMat = new THREE.MeshStandardMaterial({ color: WORLD.flowerWhite, roughness: 0.8 });
+  const pads: THREE.Mesh[] = [];
+  const padSpecs = [
+    { x: -2.1, z: 1.3, r: 0.13 },
+    { x: -1.85, z: 2.35, r: 0.1 },
+    { x: -0.95, z: 2.2, r: 0.15, flower: true },
+  ];
+  for (const p of padSpecs) {
+    const pad = new THREE.Mesh(new THREE.CircleGeometry(p.r, 9), padMat);
+    pad.rotation.x = -Math.PI / 2;
+    pad.position.set(p.x, POND.waterY + 0.015, p.z);
+    group.add(pad);
+    pads.push(pad);
+    if (p.flower) {
+      const blossom = new THREE.Mesh(new THREE.SphereGeometry(0.045, 7, 5), blossomMat);
+      blossom.scale.y = 0.6;
+      blossom.position.set(p.x, POND.waterY + 0.05, p.z);
+      group.add(blossom);
+    }
   }
-
-  // Pooled ripples: one shared geometry, one material per ripple (opacity varies).
-  const rippleGeo = new THREE.RingGeometry(0.42, 0.5, 22);
-  const ripples: Array<{ mesh: THREE.Mesh; mat: THREE.MeshBasicMaterial; life: number; maxScale: number }> = [];
-  for (let i = 0; i < RIPPLE_POOL; i++) {
-    const mat = M.ripple.clone();
-    const mesh = new THREE.Mesh(rippleGeo, mat);
-    mesh.rotation.x = -Math.PI / 2;
-    mesh.visible = false;
-    group.add(mesh);
-    ripples.push({ mesh, mat, life: 1, maxScale: 1 });
-  }
-
-  const free = () => ripples.find((r) => !r.mesh.visible);
 
   return {
     group,
-    center: { x, z },
-    radius: LAYOUT.pond.waterRadius,
-    waterY,
-    spawnRipple(px: number, pz: number) {
-      const r = free();
-      if (!r) return; // pool exhausted this frame - skip rather than allocate
-      r.life = 0;
-      r.maxScale = 2.1 + Math.random() * 0.7;
-      r.mesh.position.set(px - x, 0.015, pz - z);
-      r.mesh.visible = true;
-    },
-    update(f: Frame) {
-      for (const r of ripples) {
-        if (!r.mesh.visible) continue;
-        r.life += f.dt / 0.85;
-        if (r.life >= 1) {
-          r.mesh.visible = false;
-          continue;
-        }
-        const s = 0.25 + r.life * r.maxScale;
-        r.mesh.scale.set(s, s, 1);
-        r.mat.opacity = (1 - r.life) * 0.5 * Math.max(f.rain, 0.05);
+    waterY: POND.waterY,
+    update(dt, time, rain, tint) {
+      uniforms.uTime.value = time;
+      uniforms.uRain.value = rain;
+      uniforms.uTint.value.copy(tint);
+      for (let i = 0; i < pads.length; i++) {
+        pads[i].rotation.z = Math.sin(time * 0.4 + i * 2.1) * 0.08;
       }
     },
   };

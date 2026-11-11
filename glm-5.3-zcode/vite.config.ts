@@ -1,11 +1,9 @@
 import { defineConfig } from 'vite';
 
+// base './' so the production build works from any subpath (this arena serves
+// each world behind /<folder>/ via Caddy).
 export default defineConfig({
-  // Relative base so the static build also works behind the arena's
-  // subpath proxy (/glm-5.3-zcode/) and any other subdirectory.
   base: './',
-  build: {
-    target: 'es2021',
-    sourcemap: false,
-  },
+  server: { host: '127.0.0.1', port: 5132, strictPort: true },
+  preview: { host: '127.0.0.1', port: 5132, strictPort: true },
 });

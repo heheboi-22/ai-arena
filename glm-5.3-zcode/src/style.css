@@ -1,363 +1,331 @@
+/* Pocket World — UI. The 3D scene dominates; the panel is a small warm card. */
+
 :root {
-  --panel-bg: rgba(252, 248, 239, 0.92);
-  --panel-border: rgba(87, 64, 38, 0.18);
-  --ink: #37302a;
-  --ink-soft: #6f6355;
-  --accent: #c07a28;
-  --accent-soft: rgba(192, 122, 40, 0.14);
-  --focus-ring: #2f7bbf;
-  --radius: 14px;
-  --shadow: 0 12px 32px rgba(46, 34, 20, 0.22);
+  --panel-bg: rgba(28, 24, 20, 0.72);
+  --panel-border: rgba(255, 235, 205, 0.14);
+  --panel-shadow: 0 12px 32px rgba(10, 8, 6, 0.38);
+  --ink: #f6eddc;
+  --ink-dim: rgba(246, 237, 220, 0.62);
+  --accent: #f2a44a;
+  --accent-soft: rgba(242, 164, 74, 0.22);
+  --track: rgba(255, 240, 215, 0.18);
+  --focus: 2px solid #ffcf8d;
+  --radius: 16px;
+  color-scheme: dark;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-html,
-body {
+html, body {
   margin: 0;
   height: 100%;
   overflow: hidden;
-  background: #8ec5d6;
+  background: #10141c;
   font-family: "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
-  color: var(--ink);
   -webkit-font-smoothing: antialiased;
 }
 
-#app {
+#scene {
   position: fixed;
   inset: 0;
 }
-
-#app canvas {
+#scene canvas {
   display: block;
   touch-action: none;
 }
 
-#webgl-error {
+/* ---------- WebGL fallback ---------- */
+/* the flex layout must never override the hidden attribute */
+#webgl-fallback[hidden] { display: none; }
+
+#webgl-fallback {
   position: fixed;
-  inset: auto 16px 16px 16px;
-  max-width: 34rem;
-  margin: 0 auto;
-  padding: 16px 20px;
-  background: #fdf6ec;
-  border: 1px solid var(--panel-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  line-height: 1.5;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  margin: 0;
+  color: var(--ink);
+  background: radial-gradient(circle at 50% 35%, #2a3242, #10141c 70%);
+  font-size: 1.05rem;
+  line-height: 1.6;
   z-index: 30;
 }
 
-/* ---------------------------------------------------------------------------
-   Control panel
-   --------------------------------------------------------------------------- */
-
+/* ---------- Panel shell ---------- */
 #panel {
   position: fixed;
-  top: 16px;
-  left: 16px;
-  width: min(300px, calc(100vw - 32px));
-  background: var(--panel-bg);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--panel-border);
+  top: max(1rem, env(safe-area-inset-top));
+  left: max(1rem, env(safe-area-inset-left));
+  width: 272px;
+  max-width: calc(100vw - 2rem);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  z-index: 20;
-  overflow: hidden;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--panel-shadow);
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  color: var(--ink);
+  z-index: 10;
+  transition: background-color 0.35s ease;
 }
 
-#panel-toggle {
+#panel-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  width: 100%;
-  padding: 12px 16px;
-  border: none;
-  border-radius: var(--radius);
+  gap: 0.5rem;
+  padding: 0.8rem 0.9rem 0.7rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+#panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+#panel-glyph {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+#panel h1 {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 650;
+  letter-spacing: 0.015em;
+  white-space: nowrap;
+}
+
+#panel-toggle {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
   background: transparent;
-  font: inherit;
-  font-weight: 700;
-  font-size: 17px;
-  letter-spacing: 0.02em;
-  color: var(--ink);
+  color: var(--ink-dim);
   cursor: pointer;
 }
+#panel-toggle svg { width: 14px; height: 14px; transition: transform 0.3s ease; }
+#panel-toggle:hover { color: var(--ink); background: rgba(255, 240, 215, 0.08); }
 
-#panel-chevron {
-  transition: transform 0.25s ease;
-  color: var(--ink-soft);
-  flex: none;
-}
-
-#panel[data-collapsed="true"] #panel-chevron {
-  transform: rotate(-90deg);
-}
+#panel.collapsed #panel-toggle svg { transform: rotate(180deg); }
 
 #panel-body {
   display: grid;
-  gap: 14px;
-  padding: 4px 16px 16px;
+  gap: 0.95rem;
+  padding: 0.15rem 0.9rem 0.9rem;
+  border-top: 1px solid var(--panel-border);
 }
-
-#panel[data-collapsed="true"] #panel-body {
+#panel.collapsed #panel-body {
   display: none;
 }
 
-.field {
-  display: grid;
-  gap: 6px;
-}
+/* ---------- Controls ---------- */
+.ctl { display: grid; gap: 0.35rem; }
 
-.field-head {
+.ctl-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 8px;
+  font-size: 0.78rem;
 }
 
-label,
-.label-text {
-  font-size: 12.5px;
-  font-weight: 600;
+.ctl-head label, .ctl-name, .row label {
+  color: var(--ink-dim);
+  font-weight: 550;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--ink-soft);
+  font-size: 0.72rem;
 }
 
-output {
-  font-size: 13px;
-  font-weight: 700;
+#time-label, #wind-label {
   font-variant-numeric: tabular-nums;
-  color: var(--accent);
+  font-weight: 650;
+  color: var(--ink);
+  font-size: 0.82rem;
 }
-
-.hint {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.45;
-  color: var(--ink-soft);
-}
-
-.scale {
-  display: flex;
-  justify-content: space-between;
-  font-size: 10px;
-  color: var(--ink-soft);
-  opacity: 0.8;
-  padding: 0 1px;
-}
-
-/* --- Sliders ------------------------------------------------------------- */
 
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 26px;
+  height: 22px;
   margin: 0;
   background: transparent;
   cursor: pointer;
 }
-
 input[type="range"]::-webkit-slider-runnable-track {
   height: 6px;
   border-radius: 3px;
-  background: linear-gradient(90deg, #f0c987 0%, #f0c987 var(--fill, 50%), #e3d9c6 var(--fill, 50%), #e3d9c6 100%);
+  background: linear-gradient(to right, var(--accent) var(--fill, 50%), var(--track) var(--fill, 50%));
 }
-
 input[type="range"]::-moz-range-track {
   height: 6px;
   border-radius: 3px;
-  background: linear-gradient(90deg, #f0c987 0%, #f0c987 var(--fill, 50%), #e3d9c6 var(--fill, 50%), #e3d9c6 100%);
+  background: var(--track);
 }
-
+input[type="range"]::-moz-range-progress {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--accent);
+}
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  appearance: none;
-  width: 18px;
-  height: 18px;
-  margin-top: -6px;
+  width: 16px;
+  height: 16px;
+  margin-top: -5px;
   border-radius: 50%;
-  background: #fffdf7;
+  background: #ffe3bd;
   border: 2px solid var(--accent);
-  box-shadow: 0 2px 6px rgba(60, 40, 15, 0.28);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
 }
-
 input[type="range"]::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: #fffdf7;
+  background: #ffe3bd;
   border: 2px solid var(--accent);
-  box-shadow: 0 2px 6px rgba(60, 40, 15, 0.28);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
 }
 
-/* --- Segmented weather buttons ------------------------------------------- */
+.ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.62rem;
+  color: var(--ink-dim);
+  opacity: 0.8;
+  margin-top: -0.3rem;
+  padding: 0 1px;
+}
 
 .segmented {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 4px;
   padding: 4px;
-  background: #e9e1cf;
   border-radius: 10px;
+  background: rgba(0, 0, 0, 0.28);
 }
 
 .seg-btn {
-  padding: 7px 10px;
-  border: none;
+  border: 0;
   border-radius: 7px;
-  background: transparent;
+  padding: 0.42rem 0.3rem;
   font: inherit;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 560;
+  color: var(--ink-dim);
+  background: transparent;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
-
+.seg-btn:hover { color: var(--ink); }
 .seg-btn.is-active {
-  background: #fffdf7;
-  color: var(--ink);
-  box-shadow: 0 1px 4px rgba(60, 40, 15, 0.18);
+  background: var(--accent-soft);
+  color: #ffd9a4;
+  box-shadow: inset 0 0 0 1px rgba(242, 164, 74, 0.45);
 }
 
-/* --- House lights switch --------------------------------------------------- */
-
-.field.row {
-  grid-template-columns: 1fr auto;
+.row {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
-.toggle-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 8px;
-  border: none;
-  border-radius: 9px;
-  background: transparent;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ink-soft);
-  cursor: pointer;
-}
-
-.knob-track {
-  display: inline-block;
-  width: 38px;
-  height: 22px;
-  border-radius: 11px;
-  background: #d8cfba;
-  transition: background 0.25s ease;
+/* Switch */
+.switch {
   position: relative;
+  width: 42px;
+  height: 24px;
   flex: none;
+  padding: 0;
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.32);
+  cursor: pointer;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
-
-.knob {
+.switch .knob {
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 16px;
-  height: 16px;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: #fffdf7;
-  box-shadow: 0 1px 3px rgba(60, 40, 15, 0.3);
-  transition: transform 0.25s ease;
+  background: #cbbfa8;
+  transition: transform 0.22s ease, background-color 0.22s ease;
+}
+.switch[aria-checked="true"] {
+  background: var(--accent-soft);
+  border-color: rgba(242, 164, 74, 0.5);
+}
+.switch[aria-checked="true"] .knob {
+  transform: translateX(18px);
+  background: #ffd9a4;
 }
 
-.toggle-btn[aria-checked="true"] {
-  color: var(--accent);
-}
-
-.toggle-btn[aria-checked="true"] .knob-track {
-  background: var(--accent);
-}
-
-.toggle-btn[aria-checked="true"] .knob {
-  transform: translateX(16px);
-}
-
-/* --- Reset ----------------------------------------------------------------- */
-
-.reset-btn {
-  padding: 9px 12px;
+/* Reset */
+#reset-btn {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
   border: 1px solid var(--panel-border);
   border-radius: 10px;
-  background: #fffdf7;
-  font: inherit;
-  font-size: 13.5px;
-  font-weight: 600;
+  background: rgba(255, 240, 215, 0.07);
   color: var(--ink);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 580;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.2s ease;
+}
+#reset-btn:hover { background: rgba(255, 240, 215, 0.14); }
+#reset-btn:active { transform: translateY(1px); }
+
+#hint {
+  margin: 0.1rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--ink-dim);
+  text-align: center;
 }
 
-.reset-btn:hover {
-  background: var(--accent-soft);
-}
-
-.reset-btn:active {
-  transform: scale(0.98);
-}
-
-/* --- Focus visibility ------------------------------------------------------ */
-
-:is(button, input[type="range"]):focus-visible {
-  outline: 2px solid var(--focus-ring);
+/* Focus visibility for every interactive element */
+button:focus-visible,
+input[type="range"]:focus-visible,
+#panel-head:focus-visible {
+  outline: var(--focus);
   outline-offset: 2px;
+  border-radius: 8px;
 }
 
-/* ---------------------------------------------------------------------------
-   Small screens: bottom sheet that can collapse to a slim bar
-   --------------------------------------------------------------------------- */
-
-@media (max-width: 640px), (max-height: 480px) {
+/* ---------- Small screens: dock to the bottom ---------- */
+@media (max-width: 640px), (max-height: 560px) {
   #panel {
     top: auto;
-    left: 12px;
-    right: 12px;
-    bottom: max(12px, env(safe-area-inset-bottom));
-    width: auto;
-    border-radius: 16px;
+    left: 50%;
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    width: min(420px, calc(100vw - 1.5rem));
   }
-
-  #panel-toggle {
-    padding: 10px 14px;
-    font-size: 15.5px;
-  }
-
   #panel-body {
     grid-template-columns: 1fr 1fr;
-    gap: 10px 14px;
-    padding: 2px 14px 14px;
+    gap: 0.8rem 1rem;
   }
-
-  .field.time-field {
+  .ctl.weather, .ctl:has(#wind-slider), .ctl.row, #reset-btn, #hint {
     grid-column: 1 / -1;
   }
-
-  .field.row,
-  .reset-btn,
-  .interaction-hint {
-    grid-column: 1 / -1;
-  }
-
-  .interaction-hint {
-    display: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #panel-chevron,
-  .knob,
-  .knob-track,
-  .seg-btn,
-  .reset-btn {
-    transition: none;
-  }
+  #hint { display: none; }
 }

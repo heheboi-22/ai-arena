@@ -1,0 +1,21 @@
+import * as THREE from 'three';
+import type { createWorld } from './world';
+export type State = { time:number; rain:boolean; wind:number; lights:boolean };
+type World = ReturnType<typeof createWorld>;
+const color = (hex:string) => new THREE.Color(hex);
+const day=color('#d9e4d8'), dusk=color('#e9c6ac'), night=color('#253b52');
+export class Environment {
+ private sun=new THREE.DirectionalLight('#fff2d4',2.6); private ambient=new THREE.HemisphereLight('#dbeaf0','#b6ad99',1.3); private rain:THREE.LineSegments; private positions:Float32Array; private drops:{x:number;y:number;z:number;speed:number}[]=[]; private rainMix=0; private visualTime=16; private visualWind=30; private elapsed=0; private reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ constructor(private scene:THREE.Scene,private world:World){
+  scene.add(this.ambient);this.sun.position.set(-5,8,5);this.sun.castShadow=true;this.sun.shadow.mapSize.set(1024,1024);this.sun.shadow.camera.left=-8;this.sun.shadow.camera.right=8;this.sun.shadow.camera.top=8;this.sun.shadow.camera.bottom=-8;this.sun.shadow.normalBias=.035;scene.add(this.sun);
+  const count=window.innerWidth<700?240:420;this.positions=new Float32Array(count*6); for(let i=0;i<count;i++)this.drops.push({x:(Math.random()-.5)*10,y:Math.random()*8,z:(Math.random()-.5)*10,speed:5+Math.random()*3});const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(this.positions,3).setUsage(THREE.DynamicDrawUsage));this.rain=new THREE.LineSegments(geo,new THREE.LineBasicMaterial({color:'#c4d9d7',transparent:true,opacity:0,depthWrite:false}));scene.add(this.rain);
+ }
+ update(dt:number,state:State){
+  this.elapsed+=dt; const blend=1-Math.exp(-dt*4); const timeDelta=((state.time-this.visualTime+36)%24)-12; this.visualTime=(this.visualTime+timeDelta*blend+24)%24; this.visualWind+=(state.wind-this.visualWind)*blend; const hour=this.visualTime;const sunAngle=(hour-6)/24*Math.PI*2;const daylight=THREE.MathUtils.smoothstep(Math.sin(sunAngle),-.16,.35);const sunset=(1-Math.min(1,Math.abs(hour-18)/3))*daylight; const sky=night.clone().lerp(day,daylight).lerp(dusk,Math.max(0,sunset)*.65);this.rainMix+=(Number(state.rain)-this.rainMix)*(1-Math.exp(-dt*2));sky.lerp(color('#758c92'),this.rainMix*.36);this.scene.background=sky; document.querySelector<HTMLElement>('.experience')!.style.backgroundColor=`#${sky.getHexString()}`; document.querySelector('.experience')!.classList.toggle('is-night',daylight<.4);
+  this.sun.position.set(Math.cos(sunAngle)*8,Math.max(-2,Math.sin(sunAngle)*10),5);this.sun.color.copy(color('#b8cce7').lerp(color('#fff0d1'),daylight).lerp(color('#ffbd87'),Math.max(0,sunset)*.6));this.sun.intensity=(.3+2.4*daylight)*(1-this.rainMix*.48);this.ambient.intensity=(1.05+.35*daylight)*(1-this.rainMix*.15);this.ambient.color.copy(color('#a5c4dc').lerp(color('#e7f0df'),daylight));
+  this.world.house.windowMat.emissiveIntensity=state.lights?(1.2+(1-daylight)*1.5):0;this.world.house.windowMat.color.set(state.lights?'#f6c67b':'#748c83');this.world.house.light.intensity=state.lights?(2.2+(1-daylight)*5):0;
+  const wind=this.visualWind/100;const motion=this.reduced?.25:1;this.world.mill.rotor.rotation.z-=dt*wind*1.8*motion;this.world.trees.forEach(t=>{t.crown.rotation.z=Math.sin(this.elapsed*1.1+t.phase)*wind*.055*motion;});this.world.clouds.forEach(c=>{c.group.position.x=c.baseX+Math.sin(this.elapsed*.13*wind+c.phase)*.5*wind*motion;c.material.color.copy(color('#f5eee0').lerp(color('#788b8e'),this.rainMix*.75).multiplyScalar(.65+.35*daylight));});
+  const rm=this.rain.material as THREE.LineBasicMaterial;rm.opacity=this.rainMix*.58;this.rain.visible=this.rainMix>.01;this.drops.forEach((p,i)=>{p.y-=p.speed*dt;p.x+=wind*dt*2;if(p.y<.15){p.y=6+Math.random()*2;p.x=(Math.random()-.5)*10;p.z=(Math.random()-.5)*10;}if(p.x>5)p.x=-5;const j=i*6;this.positions[j]=p.x;this.positions[j+1]=p.y;this.positions[j+2]=p.z;this.positions[j+3]=p.x-wind*.16;this.positions[j+4]=p.y+.38;this.positions[j+5]=p.z;});(this.rain.geometry.attributes.position as THREE.BufferAttribute).needsUpdate=true;
+  this.world.ripples.forEach((r,i)=>{const phase=(this.elapsed*.55+i/5)%1;r.scale.setScalar(.35+phase*1.4);(r.material as THREE.MeshBasicMaterial).opacity=this.rainMix*(1-phase)*.55;});
+ }
+}

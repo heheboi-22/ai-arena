@@ -278,6 +278,42 @@
     "color": "#2563EB"
   },
   {
+    "id": "glm-5.3-zcode",
+    "name": "GLM 5.3 (ZCode)",
+    "port": 5132,
+    "fallbackPort": null,
+    "path": "/glm-5.3-zcode/",
+    "tag": "Zhipu AI",
+    "color": "#8B5CF6"
+  },
+  {
+    "id": "kimi-k3.1-pro-workbuddy",
+    "name": "Kimi K3.1 Pro (WorkBuddy)",
+    "port": 5133,
+    "fallbackPort": null,
+    "path": "/kimi-k3.1-pro-workbuddy/",
+    "tag": "Moonshot AI",
+    "color": "#0891B2"
+  },
+  {
+    "id": "gpt-6.1-terra-codex",
+    "name": "GPT 6.1 Terra (Codex)",
+    "port": 5134,
+    "fallbackPort": null,
+    "path": "/gpt-6.1-terra-codex/",
+    "tag": "OpenAI",
+    "color": "#3B8267"
+  },
+  {
+    "id": "hy3-workbuddy",
+    "name": "Pocket World (WorkBuddy)",
+    "port": 5135,
+    "fallbackPort": null,
+    "path": "/hy3-workbuddy/",
+    "tag": "WorkBuddy",
+    "color": "#f4b860"
+  },
+  {
     "id": "deepseek-v4.1-flash-1017-coreweave",
     "name": "DeepSeek v4.1 Flash 1017 (CoreWeave)",
     "port": 5136,
@@ -285,5 +321,41 @@
     "path": "/deepseek-v4.1-flash-1017-coreweave/",
     "tag": "DeepSeek",
     "color": "#2563EB"
+  },
+  {
+    "id": "muse-spark-1.3-muse",
+    "name": "Muse Spark 1.3 (Muse)",
+    "port": 5137,
+    "fallbackPort": null,
+    "path": "/muse-spark-1.3-muse/",
+    "tag": "Meta",
+    "color": "#E91E63"
+  },
+  {
+    "id": "hy-4-workbuddy",
+    "name": "HY 4 (WorkBuddy)",
+    "port": 5138,
+    "fallbackPort": null,
+    "path": "/hy-4-workbuddy/",
+    "tag": "Tencent",
+    "color": "#b7652e"
+  },
+  {
+    "id": "claude-fable-5.2-claude",
+    "name": "Claude Fable 5.2 (Claude)",
+    "port": 5139,
+    "fallbackPort": null,
+    "path": "/claude-fable-5.2-claude/",
+    "tag": "Anthropic",
+    "color": "#D97757"
+  },
+  {
+    "id": "gemini-4-carbon-coarena",
+    "name": "Gemini 4 Carbon (CoArena)",
+    "port": 5140,
+    "fallbackPort": null,
+    "path": "/gemini-4-carbon-coarena/",
+    "tag": "Google",
+    "color": "#0F9D58"
   }
 ]

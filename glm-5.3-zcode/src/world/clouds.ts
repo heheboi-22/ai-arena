@@ -1,83 +1,69 @@
 import * as THREE from 'three';
-import { M } from './materials';
-import { mulberry32 } from '../lib/math';
-import type { Frame } from '../lib/frame';
+import { makeRng } from '../lib/math';
+import { WORLD } from '../palette';
+import type { SharedMaterials } from './materials';
 
 export interface Clouds {
   group: THREE.Group;
-  update(f: Frame): void;
+  update: (dt: number, time: number, wind: number, rain: number, reduced: boolean) => void;
 }
 
-interface Drifter {
-  group: THREE.Group;
-  radius: number;
-  angle: number;
-  height: number;
+interface CloudUnit {
+  g: THREE.Group;
   speed: number;
   bobPhase: number;
 }
 
-const PUFF_GEO = new THREE.IcosahedronGeometry(1, 0);
-const RAIN_GRAY = new THREE.Color(0x6f7887);
-const WHITE = new THREE.Color(0xffffff);
-const tmpColor = new THREE.Color();
-
-/** Puffy low-poly clouds orbiting the island; drift speed follows the wind. */
-export function makeClouds(): Clouds {
+/** Low-poly puff clouds drifting through; one shared material grays in rain. */
+export function createClouds(mats: SharedMaterials): Clouds {
   const group = new THREE.Group();
-  const rand = mulberry32(4242);
-  const drifters: Drifter[] = [];
+  const rng = makeRng(555);
+  const units: CloudUnit[] = [];
+  const puffGeo = new THREE.SphereGeometry(1, 7, 5);
 
-  const SPECS = [
-    { radius: 9.6, height: 3.4, puffs: 4 },
-    { radius: 11.4, height: 5.0, puffs: 5 },
-    { radius: 13.0, height: 2.9, puffs: 3 },
-    { radius: 10.2, height: 4.6, puffs: 4 },
-    { radius: 12.2, height: 3.8, puffs: 5 },
-    { radius: 14.2, height: 5.6, puffs: 3 },
-  ];
-
-  for (const spec of SPECS) {
-    const cloud = new THREE.Group();
-    for (let i = 0; i < spec.puffs; i++) {
-      const puff = new THREE.Mesh(PUFF_GEO, M.cloud);
+  for (let c = 0; c < 6; c++) {
+    const g = new THREE.Group();
+    const puffs = 4 + Math.floor(rng() * 3);
+    const scale = 0.55 + rng() * 0.5;
+    for (let i = 0; i < puffs; i++) {
+      const puff = new THREE.Mesh(puffGeo, mats.cloud);
       puff.position.set(
-        (i - (spec.puffs - 1) / 2) * (0.9 + rand() * 0.4) + (rand() - 0.5) * 0.4,
-        (rand() - 0.5) * 0.35,
-        (rand() - 0.5) * 0.9,
+        (i - puffs / 2) * 0.75 * scale + rng() * 0.2,
+        rng() * 0.22 * scale,
+        (rng() - 0.5) * 0.5 * scale,
       );
-      const s = 0.72 + rand() * 0.55;
-      puff.scale.set(s * 1.55, s * 0.62, s);
-      cloud.add(puff);
+      const r = (0.42 + rng() * 0.3) * scale;
+      puff.scale.set(r, r * 0.72, r * 0.85);
+      puff.castShadow = true;
+      g.add(puff);
     }
-    group.add(cloud);
-    drifters.push({
-      group: cloud,
-      radius: spec.radius,
-      angle: rand() * Math.PI * 2,
-      height: spec.height,
-      speed: 0.75 + rand() * 0.5,
-      bobPhase: rand() * Math.PI * 2,
-    });
+    g.position.set(
+      -14 + rng() * 28,
+      4.6 + rng() * 1.8,
+      -9 + rng() * 18,
+    );
+    group.add(g);
+    units.push({ g, speed: 0.55 + rng() * 0.6, bobPhase: rng() * Math.PI * 2 });
   }
+
+  const clear = new THREE.Color(WORLD.cloud);
+  const gray = new THREE.Color(WORLD.cloudRain);
 
   return {
     group,
-    update(f: Frame) {
-      // One shared material write retints every puff.
-      tmpColor.copy(WHITE).lerp(RAIN_GRAY, f.rain);
-      const brightness = 0.35 + 0.65 * Math.max(f.dayFactor, 0.25);
-      M.cloud.color.copy(tmpColor).multiplyScalar(brightness);
-
-      const motion = f.reducedMotion ? 0.45 : 1;
-      for (const d of drifters) {
-        d.angle += f.dt * (0.025 + f.wind * 0.16) * d.speed * motion;
-        d.group.position.set(
-          Math.cos(d.angle) * d.radius,
-          d.height - f.rain * 0.7 + Math.sin(f.time * 0.4 * motion + d.bobPhase) * 0.12,
-          Math.sin(d.angle) * d.radius,
-        );
+    update(dt, time, wind, rain, reduced) {
+      // drift speed follows the shared wind state
+      const drift = 0.1 + wind * 1.5;
+      const bobAmp = reduced ? 0.03 : 0.1;
+      for (const u of units) {
+        u.g.position.x += drift * u.speed * dt;
+        if (u.g.position.x > 16) u.g.position.x = -16;
+        u.g.position.y += Math.sin(time * 0.32 + u.bobPhase) * bobAmp * dt;
       }
+      mats.cloud.color.lerpColors(clear, gray, rain);
+      // fluff slightly flattens under rain
+      const squash = 1 - rain * 0.12;
+      for (const u of units) u.g.scale.y = squash;
     },
   };
 }

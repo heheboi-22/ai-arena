@@ -1,8 +1,10 @@
 # MODELS.md - catatan model, effort, reasoning, harness, provider
 
-Satu baris per folder model di repo ini. Kolom `Effort` sudah terisi semua: repo
-ini tidak menyimpannya sama sekali, jadi nilainya berasal dari catatan sesi pemilik
-repo dan dari berkas harness di mesin ini (lihat bagian Sumber di bawah). Effort
+Satu baris per folder model di repo ini. Kolom `Effort` hampir seluruhnya
+terisi: repo ini tidak menyimpannya sama sekali, jadi nilainya berasal dari
+catatan sesi pemilik repo dan dari berkas harness di mesin ini (lihat bagian
+Sumber di bawah). Satu-satunya sel yang dibiarkan `?` adalah baris
+`gemini-4-carbon-coarena` (lihat bagian Selisih folder dan `models.json`). Effort
 dan reasoning tidak dipisah jadi dua kolom karena keduanya setelan yang sama.
 
 Kolom `From` diambil dari field `tag` di `aggregator/models.json` kalau ada.
@@ -18,6 +20,7 @@ tidak menyebut harness sama sekali. Kolom provider sudah terisi semua.
 
 | Model | From (pembuat) | Effort | Harness | Provider (inference) | Folder |
 |:--|:--|:--|:--|:--|:--|
+| Claude Fable 5.2 | Anthropic | medium | Claude Code | Anthropic | `claude-fable-5.2-claude` |
 | Claude Haiku 5.5 | Anthropic | xhigh | Claude Code | Anthropic | `claude-haiku-5.5-claude` |
 | Claude Opus 4.6 | Anthropic | default | Google Antigravity | Google | `claude-opus-4.6-antigravity` |
 | Claude Opus 5.5 | Anthropic | xhigh | Claude Code | Anthropic | `claude-opus-5.5-claude` |
@@ -34,6 +37,7 @@ tidak menyebut harness sama sekali. Kolom provider sudah terisi semua.
 | Gemini 3.8 Flash | Google | high | Google Antigravity | Google | `gemini-3.8-flash` |
 | Gemini 4 Argon | Google * | high | Google Antigravity | Google | `gemini-4-argon-antigravity` |
 | Gemini 4 Argon | Google * | xhigh | Cline | Cline | `gemini-4-argon-cline` |
+| Gemini 4 Carbon | Google | ? | CoArena | Coarena | `gemini-4-carbon-coarena` |
 | GLM 5.2 | Zhipu AI | default | OpenCode | CoreWeave | `glm-5.2-coreweave` |
 | GLM 5.3 | Zhipu AI * | max | ZCode | Z.ai | `glm-5.3-zcode` |
 | GLM 5.3 | Zhipu AI | max | CodeBuddy | CodeBuddy | `GLM-5.3-Codebuddy` |
@@ -52,6 +56,7 @@ tidak menyebut harness sama sekali. Kolom provider sudah terisi semua.
 | LongCat 2.5 | LongCat | default | OpenCode | OpenCode | `longcat-2.5-opencode` |
 | MiMo v2.6 Flash | Xiaomi / MIMO | default | ? | Xiaomi | `mimo-v2.6-flash` |
 | Muse Spark 1.3 | Muse / Spark | xhigh | OpenCode | OpenCode | `muse-spark-1.3-opencode` |
+| Muse Spark 1.3 | Meta | xhigh | Muse | Meta | `muse-spark-1.3-muse` |
 | Opus 5.5 | Anthropic | medium | Cursor | Anthropic | `opus-5.5-cursor` |
 | Pixel Canary | ? | default | Cline | Cline | `pixel-canary-cline` |
 | Space Bunny | ? | default | Cline | Cline | `space-bunny-cline` |
@@ -79,7 +84,8 @@ GLM 5.3 di ZCode awalnya ditulis `TBD` karena pemilik repo cuma ingat "tertinggi
 lalu diisi `max` setelah katalog model menunjukkan tingkatan tertinggi GLM 5.3
 memang `max`; GLM 5.3 CodeBuddy dan Kimi K2.8 CodeBuddy dikonfirmasi pemilik repo
 memakai reasoning `max`, begitu juga DeepSeek v4.1 Flash 1017 di DeepSeek Harness.
-`medium` = setelan tengah, terpakai di satu baris Cursor (`opus-5.5-cursor`).
+`medium` = setelan tengah, terpakai di satu baris Cursor (`opus-5.5-cursor`) dan
+satu baris Claude Code (`claude-fable-5.2-claude`).
 Grok 4.7 awalnya masuk aturan Cursor `medium`, lalu diganti `xhigh` lewat koreksi
 pemilik repo, jadi baris Cursor tidak seragam.
 `?` = tidak ada jejaknya di repo.
@@ -171,18 +177,19 @@ Tiga baris pertama yang membuat klaim "effort tidak terekam di mana pun" di vers
 awal catatan ini perlu diperbaiki: untuk harness opencode datanya ada, tinggal
 dibaca. Untuk harness lain, sebagian nilainya masih dari catatan sesi pemilik repo.
 
-Kolom Effort sekarang terisi seluruhnya, 37 baris. Sebelas di antaranya dari
-berkas di mesin ini, sisanya dari catatan sesi pemilik repo. Tidak ada lagi baris
-`TBD`.
+Kolom Effort sekarang terisi di semua baris kecuali `gemini-4-carbon-coarena`
+(model Coarena yang tidak punya setelan effort tercatat). Sebelas di antaranya
+dari berkas di mesin ini, sisanya dari catatan sesi pemilik repo. Tidak ada lagi
+baris `TBD`.
 
 ## Selisih folder dan `models.json`
 
-37 folder model di repo (ditambah symlink `Gemini-4-Argon-Antigravity`), 32 terdaftar di `aggregator/models.json`. Lima folder
+45 folder model di repo (ditambah symlink `Gemini-4-Argon-Antigravity`), 40 terdaftar di `aggregator/models.json`. Lima folder
 belum punya entri konsol:
 
 - `gemini-3.1-pro-antigraivty`
 - `gemini-4-argon-cline`
-- `glm-5.3-zcode`
+- `gemini-4-argon-web`
 - `gpt-6-sol-zed`
 - `pixel-canary-cline`
 
@@ -196,6 +203,20 @@ terdaftar di port 5129 (`glm-5.3-codebuddy`).
 terdaftar di port 5130 (`kimi-k2.8-codebuddy`).
 `deepseek-v4.1-flash-1017-dsh` sekarang sudah berisi source Pocket World lengkap dan
 terdaftar di port 5131.
+`glm-5.3-zcode` sekarang sudah berisi source Pocket World lengkap dan
+terdaftar di port 5132.
+`deepseek-v4.1-flash-1017-coreweave` sekarang sudah berisi source Pocket World
+lengkap (dikirim Arista Latif lewat WhatsApp) dan terdaftar di port 5136.
+`hy-4-workbuddy` berisi source Pocket World lengkap (Three.js + Vite + TypeScript,
+36/36 pemeriksaan headless Chromium lolos) dan terdaftar di port 5138.
+`claude-fable-5.2-claude` berisi source Pocket World lengkap dan terdaftar di
+port 5139 (di upstream tercatat 5132, digeser karena 5132-5138 sudah dipakai
+world lain di working tree mesin ini).
+`gemini-4-carbon-coarena` berisi source Pocket World lengkap dan terdaftar di port
+5140. Barisnya satu-satunya yang masih `?` di kolom `Effort` dan `Harness`:
+folder ini dibuat langsung di working tree lewat Coarena Model API, tanpa setelan
+effort dan tanpa harness CLI yang tercatat, jadi dua sel itu sengaja dibiarkan
+terbuka daripada diisi tebakan.
 
 Dua hal kecil yang ketemu waktu mencatat:
 

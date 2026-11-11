@@ -1,0 +1,21 @@
+{
+  "name": "pocket-world",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A polished, interactive 3D diorama of a tiny floating island.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host"
+  },
+  "dependencies": {
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.187.0",
+    "puppeteer": "^25.16.0",
+    "typescript": "^5.7.2",
+    "vite": "^8.3.0"
+  }
+}

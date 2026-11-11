@@ -1,62 +1,56 @@
-/** Small math helpers shared across the world and system modules. */
+/** Small math helpers shared across the world and systems. */
 
-export const clamp = (v: number, min: number, max: number): number =>
-  Math.min(max, Math.max(min, v));
+export const clamp = (v: number, lo: number, hi: number): number =>
+  v < lo ? lo : v > hi ? hi : v;
+
+export const clamp01 = (v: number): number => clamp(v, 0, 1);
 
 export const lerp = (a: number, b: number, t: number): number => a + (b - a) * t;
 
-export const smoothstep = (t: number): number => {
-  const x = clamp(t, 0, 1);
-  return x * x * (3 - 2 * x);
+export const smoothstep = (edge0: number, edge1: number, v: number): number => {
+  const t = clamp01((v - edge0) / (edge1 - edge0));
+  return t * t * (3 - 2 * t);
 };
 
 /**
- * Frame-rate independent exponential damping. `smoothing` is the fraction of
- * the remaining distance left after one second (smaller = snappier).
+ * Frame-rate independent exponential damping: moves `current` toward
+ * `target` so that a step of `lambda` per second is covered.
+ * lambda ~ 3..8 works well for scene transitions.
  */
-export const damp = (
-  current: number,
-  target: number,
-  smoothing: number,
-  dt: number,
-): number => lerp(current, target, 1 - Math.pow(smoothing, dt));
+export const damp = (current: number, target: number, lambda: number, dt: number): number =>
+  lerp(current, target, 1 - Math.exp(-lambda * dt));
 
-/** Deterministic pseudo-random generator so the island looks the same each run. */
-export function mulberry32(seed: number): () => number {
-  let a = seed >>> 0;
+export const easeInOutCubic = (t: number): number =>
+  t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+/** Deterministic pseudo-random generator so the island looks the same every load. */
+export function makeRng(seed: number): () => number {
+  let s = seed >>> 0;
   return () => {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    s = (s + 0x6d2b79f5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
 
-/** Cheap smooth-ish value noise built on a seeded random table. */
-export function makeValueNoise(seed: number): (x: number, y: number) => number {
-  const rand = mulberry32(seed);
-  const size = 64;
-  const table = new Float32Array(size * size);
-  for (let i = 0; i < table.length; i++) table[i] = rand();
-
-  const at = (ix: number, iy: number) =>
-    table[(((ix % size) + size) % size) * size + (((iy % size) + size) % size)];
-
-  return (x: number, y: number) => {
-    const ix = Math.floor(x);
-    const iy = Math.floor(y);
-    const fx = smoothstep(x - ix);
-    const fy = smoothstep(y - iy);
-    const a = lerp(at(ix, iy), at(ix + 1, iy), fx);
-    const b = lerp(at(ix, iy + 1), at(ix + 1, iy + 1), fx);
-    return lerp(a, b, fy);
+/** Smooth value noise in [-1, 1]; seeded hash on integer lattice, bilinear blend. */
+export function makeNoise2D(seed = 1337): (x: number, y: number) => number {
+  const hash = (ix: number, iy: number): number => {
+    let h = Math.imul(ix, 374761393) + Math.imul(iy, 668265263) + Math.imul(seed, 2246822519);
+    h = Math.imul(h ^ (h >>> 13), 1274126177);
+    return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
   };
-}
-
-/** Formats decimal hours (0..24) as an "HH:MM" clock label. */
-export function formatClock(hours: number): string {
-  const h = Math.floor(((hours % 24) + 24) % 24);
-  const m = Math.floor((hours - Math.floor(hours)) * 60);
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  return (x: number, y: number): number => {
+    const ix = Math.floor(x), iy = Math.floor(y);
+    const fx = x - ix, fy = y - iy;
+    const sx = fx * fx * (3 - 2 * fx);
+    const sy = fy * fy * (3 - 2 * fy);
+    const n00 = hash(ix, iy), n10 = hash(ix + 1, iy);
+    const n01 = hash(ix, iy + 1), n11 = hash(ix + 1, iy + 1);
+    const a = lerp(n00, n10, sx);
+    const b = lerp(n01, n11, sx);
+    return lerp(a, b, sy) * 2 - 1;
+  };
 }

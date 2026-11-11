@@ -1,5 +1,5 @@
 # ==============================================================================
-# AI Arena: one image, one container, 32 processes
+# AI Arena: one image, one container, 41 processes
 # ==============================================================================
 #   docker compose up -d --build     then open http://localhost:8080/
 #
@@ -276,6 +276,44 @@ RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no
 COPY deepseek-v4.1-flash-1017-dsh/ ./
 RUN npm run build \
  && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+# 5132  glm-5.3-zcode
+FROM ${NODE_IMAGE} AS m-glm-5.3-zcode
+WORKDIR /src
+COPY glm-5.3-zcode/package.json glm-5.3-zcode/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY glm-5.3-zcode/ ./
+RUN npm run build \
+ && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+
+# 5133  kimi-k3.1-pro-workbuddy
+FROM ${NODE_IMAGE} AS m-kimi-k3.1-pro-workbuddy
+WORKDIR /src
+COPY kimi-k3.1-pro-workbuddy/package.json kimi-k3.1-pro-workbuddy/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY kimi-k3.1-pro-workbuddy/ ./
+RUN npm run build \
+ && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+# 5134  gpt-6.1-terra-codex
+FROM ${NODE_IMAGE} AS m-gpt-6.1-terra-codex
+WORKDIR /src
+COPY gpt-6.1-terra-codex/package.json gpt-6.1-terra-codex/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY gpt-6.1-terra-codex/ ./
+RUN npm run build \
+ && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+
+# 5135  hy3-workbuddy  (Pocket World — Three.js floating-island diorama)
+FROM ${NODE_IMAGE} AS m-hy3-workbuddy
+WORKDIR /src
+COPY hy3-workbuddy/package.json hy3-workbuddy/package-lock.json ./
+# Puppeteer is a dev-only artifact used by the headless verification harness; its
+# Chromium download is unnecessary for the production build, so skip it to keep
+# the image build fast and offline-friendly.
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY hy3-workbuddy/ ./
+RUN npm run build \
+ && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
 
 # 5136  deepseek-v4.1-flash-1017-coreweave  (Pocket World — Three.js floating-island diorama)
 FROM ${NODE_IMAGE} AS m-deepseek-v4.1-flash-1017-coreweave
@@ -285,6 +323,46 @@ RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no
 COPY deepseek-v4.1-flash-1017-coreweave/ ./
 RUN npm run build \
  && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+# 5137  muse-spark-1.3-muse  (Pocket World - Three.js floating-island diorama)
+FROM ${NODE_IMAGE} AS m-muse-spark-1.3-muse
+WORKDIR /src
+COPY muse-spark-1.3-muse/package.json muse-spark-1.3-muse/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY muse-spark-1.3-muse/ ./
+RUN npm run build \
+ && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+
+# 5138  hy-4-workbuddy  (Pocket World - hand-built floating-island diorama)
+FROM ${NODE_IMAGE} AS m-hy-4-workbuddy
+WORKDIR /src
+COPY hy-4-workbuddy/package.json hy-4-workbuddy/package-lock.json ./
+# Puppeteer is dev-only (headless verification). Its Chromium download is not
+# needed to produce the static bundle.
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY hy-4-workbuddy/ ./
+RUN npm run build \
+ && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+
+# 5139  claude-fable-5.2-claude  (Pocket World - floating island, weather + day cycle)
+FROM ${NODE_IMAGE} AS m-claude-fable-5.2-claude
+WORKDIR /src
+COPY claude-fable-5.2-claude/package.json claude-fable-5.2-claude/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY claude-fable-5.2-claude/ ./
+RUN npm run build \
+ && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+
+
+# 5140  gemini-4-carbon-coarena  (Pocket World - floating island diorama)
+FROM ${NODE_IMAGE} AS m-gemini-4-carbon-coarena
+WORKDIR /src
+COPY gemini-4-carbon-coarena/package.json gemini-4-carbon-coarena/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY gemini-4-carbon-coarena/ ./
+RUN npm run build \
+  && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+
 
 # ==============================================================================
 # Stage: supervisord program per model, straight from models.json
@@ -336,7 +414,15 @@ COPY --from=m-gemini-4-argon-antigravity /out /srv/models/gemini-4-argon-antigra
 COPY --from=m-glm-5.3-codebuddy /out /srv/models/glm-5.3-codebuddy
 COPY --from=m-kimi-k2.8-codebuddy /out /srv/models/kimi-k2.8-codebuddy
 COPY --from=m-deepseek-v4.1-flash-1017-dsh /out /srv/models/deepseek-v4.1-flash-1017-dsh
+COPY --from=m-glm-5.3-zcode /out /srv/models/glm-5.3-zcode
+COPY --from=m-kimi-k3.1-pro-workbuddy /out /srv/models/kimi-k3.1-pro-workbuddy
+COPY --from=m-gpt-6.1-terra-codex /out /srv/models/gpt-6.1-terra-codex
+COPY --from=m-hy3-workbuddy /out /srv/models/hy3-workbuddy
 COPY --from=m-deepseek-v4.1-flash-1017-coreweave /out /srv/models/deepseek-v4.1-flash-1017-coreweave
+COPY --from=m-muse-spark-1.3-muse /out /srv/models/muse-spark-1.3-muse
+COPY --from=m-hy-4-workbuddy /out /srv/models/hy-4-workbuddy
+COPY --from=m-claude-fable-5.2-claude /out /srv/models/claude-fable-5.2-claude
+COPY --from=m-gemini-4-carbon-coarena /out /srv/models/gemini-4-carbon-coarena
 
 # Installed at /etc/supervisord.conf on purpose: that is the first path
 # supervisorctl searches, so `supervisorctl status` inside the container works

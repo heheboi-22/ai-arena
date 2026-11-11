@@ -1,171 +1,284 @@
 import * as THREE from 'three';
-import { lerp, makeValueNoise, smoothstep } from '../lib/math';
-import { LAYOUT } from './layout';
+import { makeNoise2D, makeRng, smoothstep, lerp, clamp01 } from '../lib/math';
+import { WORLD } from '../palette';
+import { ISLAND_R, POND, HOUSE, WINDMILL, COMPANIONS } from './layout';
+import type { SharedMaterials } from './materials';
+
+const n1 = makeNoise2D(11);
+const n2 = makeNoise2D(73);
+const n3 = makeNoise2D(131);
+const n4 = makeNoise2D(301);
+
+/** Irregular silhouette radius at angle θ (radians around +Y). */
+export function rimRadius(theta: number): number {
+  const cx = Math.cos(theta), cz = Math.sin(theta);
+  const wobble =
+    0.1 * n1(cx * 2.1, cz * 2.1) +
+    0.055 * n2(cx * 4.7 + 9, cz * 4.7 - 4) +
+    0.03 * n4(cx * 9.3 - 7, cz * 9.3 + 2);
+  return ISLAND_R * (0.9 + wobble);
+}
+
+// The spilling stream leaves the pond toward the rim, then falls off.
+// (Vector2.y carries the world z coordinate.)
+const STREAM_DIR = new THREE.Vector2(POND.x, POND.z).normalize();
+const STREAM_A = new THREE.Vector2(POND.x, POND.z).addScaledVector(STREAM_DIR, POND.r * 0.82);
+const STREAM_B = (() => {
+  const p = STREAM_A.clone();
+  for (let i = 0; i < 90; i++) {
+    p.addScaledVector(STREAM_DIR, 0.05);
+    if (p.length() >= rimRadius(Math.atan2(p.y, p.x)) * 0.96) break;
+  }
+  return p;
+})();
+
+function distToSegment(px: number, pz: number, a: THREE.Vector2, b: THREE.Vector2): number {
+  const abx = b.x - a.x, abz = b.y - a.y;
+  const t = clamp01(((px - a.x) * abx + (pz - a.y) * abz) / (abx * abx + abz * abz));
+  const dx = px - (a.x + abx * t), dz = pz - (a.y + abz * t);
+  return Math.sqrt(dx * dx + dz * dz);
+}
+
+export interface GroundSample {
+  /** terrain height at (x, z) */
+  y: number;
+  /** 0..1 sand blend (pond shore + stream banks) */
+  sand: number;
+  /** 0..1 bare-dirt blend (pads under house / windmill / path) */
+  dirt: number;
+}
+
+const sampleScratch: GroundSample = { y: 0, sand: 0, dirt: 0 };
+
+/**
+ * The single terrain formula: used to build the mesh and to place props.
+ * Writes into a shared scratch object — copy out anything you need to keep.
+ */
+function sampleGroundInto(x: number, z: number, out: GroundSample): GroundSample {
+  const r = Math.hypot(x, z);
+  const theta = Math.atan2(z, x);
+  const rim = rimRadius(theta);
+  const t = r / rim;
+
+  // domed top with soft bumps, then a rounded drooping lip at the edge
+  let y = 0.34 * (1 - t * t)
+    + n3(x * 0.55 + 3, z * 0.55 - 5) * 0.16 * (1 - t * 0.55)
+    + n4(x * 1.4, z * 1.4) * 0.05;
+  y -= smoothstep(0.74, 1.0, t) * 0.62;
+
+  // pond bowl
+  const pd = Math.hypot(x - POND.x, z - POND.z);
+  const pondBowl = smoothstep(POND.r, POND.r * 0.42, pd);
+  y = lerp(y, -0.52, pondBowl);
+
+  // stream bed from pond edge out over the lip
+  const sd = distToSegment(x, z, STREAM_A, STREAM_B);
+  const streamBed = smoothstep(0.42, 0.1, sd);
+  y = lerp(y, -0.42, streamBed);
+
+  // flatten small pads so buildings sit true
+  const hd = Math.hypot(x - HOUSE.x, z - HOUSE.z);
+  y = lerp(y, 0.26, smoothstep(1.15, 0.45, hd));
+  const wd = Math.hypot(x - WINDMILL.x, z - WINDMILL.z);
+  y = lerp(y, 0.4, smoothstep(0.85, 0.3, wd));
+
+  const sand = Math.max(
+    smoothstep(POND.r * 1.4, POND.r * 0.78, pd) * (1 - pondBowl),
+    smoothstep(0.74, 0.34, sd),
+  );
+  const dirt = Math.max(
+    smoothstep(1.25, 0.7, hd),
+    smoothstep(0.95, 0.55, wd),
+  );
+  out.y = y;
+  out.sand = clamp01(sand);
+  out.dirt = clamp01(dirt);
+  return out;
+}
+
+/** Allocation-free query for placement code. */
+function ground(x: number, z: number): GroundSample {
+  return sampleGroundInto(x, z, sampleScratch);
+}
+
+export const streamSpill = {
+  a: STREAM_A,
+  b: STREAM_B,
+  lipY: -0.45,
+};
+
+const cGrass = new THREE.Color(WORLD.grass);
+const cGrassDeep = new THREE.Color(WORLD.grassDeep);
+const cGrassLight = new THREE.Color(WORLD.grassLight);
+const cShade = new THREE.Color(WORLD.grassShade);
+const cSand = new THREE.Color(WORLD.sand);
+const cDirt = new THREE.Color(WORLD.dirt);
+const tmpC = new THREE.Color();
+
+function grassColor(x: number, z: number, s: GroundSample, out: THREE.Color): void {
+  const speck = n2(x * 1.1 + 40, z * 1.1 - 17) * 0.5 + 0.5;
+  out.copy(cGrassDeep).lerp(cGrass, speck);
+  const highlight = n4(x * 2.3 - 11, z * 2.3 + 6) * 0.5 + 0.5;
+  out.lerp(cGrassLight, highlight * 0.28);
+  out.lerp(cShade, s.dirt * 0.2);
+  out.lerp(cSand, s.sand);
+  out.lerp(cDirt, s.dirt);
+}
+
+function buildTop(segments: number, rings: number): THREE.BufferGeometry {
+  const positions: number[] = [];
+  const colors: number[] = [];
+  const indices: number[] = [];
+
+  for (let i = 0; i <= rings; i++) {
+    const rr = i / rings;
+    for (let s = 0; s <= segments; s++) {
+      const theta = (s / segments) * Math.PI * 2;
+      const rim = rimRadius(theta);
+      const x = Math.cos(theta) * rim * rr;
+      const z = Math.sin(theta) * rim * rr;
+      const sample = ground(x, z);
+      positions.push(x, sample.y, z);
+      grassColor(x, z, sample, tmpC);
+      colors.push(tmpC.r, tmpC.g, tmpC.b);
+    }
+  }
+  const cols = segments + 1;
+  for (let i = 0; i < rings; i++) {
+    for (let s = 0; s < segments; s++) {
+      const a = i * cols + s;
+      const b = a + 1;
+      const c = a + cols;
+      const d = c + 1;
+      indices.push(a, c, b, b, c, d);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geo.setIndex(indices);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+// terrain height at the spill lip (needs sampleScratch, defined above)
+streamSpill.lipY = sampleGroundInto(STREAM_B.x, STREAM_B.y, sampleScratch).y;
+
+const cRock = new THREE.Color(WORLD.rock);
+const cRockDeep = new THREE.Color(WORLD.rockDeep);
+const cRockDark = new THREE.Color(WORLD.rockDark);
+const cMoss = new THREE.Color(WORLD.grassShade);
+
+function buildUnderside(): THREE.BufferGeometry {
+  // silhouette profile of the hanging rock cone
+  const profile: THREE.Vector2[] = [];
+  const pts: [number, number][] = [
+    [5.02, -0.28], [4.78, -0.9], [4.35, -1.7], [3.6, -2.7],
+    [2.55, -3.7], [1.45, -4.7], [0.6, -5.6], [0.0, -6.4],
+  ];
+  const curve = new THREE.CatmullRomCurve3(pts.map(([x, y]) => new THREE.Vector3(x, y, 0)));
+  for (let i = 0; i <= 14; i++) {
+    const p = curve.getPoint(i / 14);
+    profile.push(new THREE.Vector2(Math.max(p.x, 0.001), p.y));
+  }
+  const geo = new THREE.LatheGeometry(profile, 30);
+
+  const pos = geo.attributes.position as THREE.BufferAttribute;
+  const colors = new Float32Array(pos.count * 3);
+  const v = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    v.fromBufferAttribute(pos, i);
+    const theta = Math.atan2(v.z, v.x);
+    const rim = rimRadius(theta);
+    // keep the cone tucked slightly inside the grass silhouette, and give
+    // each layer a rocky wobble independent of the top
+    const wobble =
+      0.09 * n1(Math.cos(theta) * 3.1 + 20, Math.sin(theta) * 3.1) +
+      0.05 * n2(Math.cos(theta) * 6.4 - 13, v.y * 1.5 + Math.sin(theta) * 6.4);
+    const squash = (rim / ISLAND_R) * (1 + wobble * smoothstep(-1.2, -4.8, v.y));
+    pos.setXYZ(i, v.x * squash, v.y, v.z * squash);
+
+    // strata bands that darken toward the tip, moss touching the grass
+    const band = Math.sin(v.y * 2.6 + n2(Math.cos(theta) * 5, Math.sin(theta) * 5) * 2.2) * 0.5 + 0.5;
+    tmpC.copy(cRock).lerp(cRockDeep, smoothstep(-0.6, -4.6, v.y));
+    tmpC.lerp(cRockDark, band * 0.28);
+    tmpC.lerp(cMoss, smoothstep(-1.0, -0.2, v.y) * (n4(Math.cos(theta) * 4, Math.sin(theta) * 4) * 0.5 + 0.5) * 0.55);
+    colors[i * 3] = tmpC.r;
+    colors[i * 3 + 1] = tmpC.g;
+    colors[i * 3 + 2] = tmpC.b;
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geo.computeVertexNormals();
+  return geo;
+}
 
 export interface Island {
   group: THREE.Group;
-  /** Deterministic ground height at x/z - the exact formula the mesh was built from. */
-  topY: (x: number, z: number) => number;
+  /** terrain height at (x,z), for placing props */
+  groundY: (x: number, z: number) => number;
+  update: (dt: number, time: number, reduced: boolean) => void;
 }
 
-const R0 = LAYOUT.islandRadius;
-const S = 64; // angular segments around the island
-
-/**
- * A floating island: a meadow disc with an irregular silhouette on top of a
- * sculpted, craggy rock cone. One height field drives both the mesh and object
- * placement, so the pond bowl, house plateau and windmill mound carved into
- * the terrain are exactly where those props later stand.
- */
-export function makeIsland(): Island {
-  const noise = makeValueNoise(LAYOUT.islandSeed);
+export function createIsland(mats: SharedMaterials): Island {
   const group = new THREE.Group();
 
-  const topY = (x: number, z: number): number => {
-    const d = Math.hypot(x, z) / R0;
-    let y = 0.38 * (1 - d * d); // gentle central dome
-    y += (noise(x * 0.45 + 11, z * 0.45 + 5) - 0.5) * 0.5 * (1 - d * 0.5); // meadow bumps
-    y -= smoothstep((d - 0.94) / 0.06) * 0.07; // tuck the rim down toward the rock
+  const top = new THREE.Mesh(buildTop(72, 20), mats.grass);
+  top.receiveShadow = true;
+  top.castShadow = true;
+  group.add(top);
 
-    const dp = Math.hypot(x - LAYOUT.pond.x, z - LAYOUT.pond.z);
-    y -= LAYOUT.pond.bowlDepth * smoothstep(1 - dp / LAYOUT.pond.bowlRadius);
+  const under = new THREE.Mesh(
+    buildUnderside(),
+    new THREE.MeshStandardMaterial({
+      color: 0xffffff, vertexColors: true, roughness: 0.98, metalness: 0, flatShading: true,
+    }),
+  );
+  under.receiveShadow = true;
+  group.add(under);
 
-    const dh = Math.hypot(x - LAYOUT.house.x, z - LAYOUT.house.z);
-    y = lerp(y, 0.16, 0.85 * smoothstep(1 - dh / 2.5));
-
-    const dm = Math.hypot(x - LAYOUT.windmill.x, z - LAYOUT.windmill.z);
-    y += LAYOUT.windmill.moundHeight * smoothstep(1 - dm / LAYOUT.windmill.moundRadius);
-
-    return y;
-  };
-
-  // Irregular silhouette radius per angular segment.
-  const silhouette = (i: number): number => {
-    const a = (i / S) * Math.PI * 2;
-    return R0 * (0.87 + 0.16 * noise(Math.cos(a) * 1.3 + 3, Math.sin(a) * 1.3 + 7));
-  };
-
-  const grassLight = new THREE.Color(0xa9cd7f);
-  const grassDeep = new THREE.Color(0x5c9a4e);
-  const dirt = new THREE.Color(0xa58258);
-  const rockTop = new THREE.Color(0x9b7d5c);
-  const rockDeep = new THREE.Color(0x4e4034);
-  const rockGray = new THREE.Color(0x76716a);
-  const tmp = new THREE.Color();
-
-  const material = new THREE.MeshStandardMaterial({
-    vertexColors: true,
-    flatShading: true,
-    roughness: 0.95,
-    metalness: 0,
-  });
-
-  const makeMesh = (positions: number[], colors: number[], indices: number[]): THREE.Mesh => {
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-    geo.setIndex(indices);
-    geo.computeVertexNormals();
-    const mesh = new THREE.Mesh(geo, material);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    return mesh;
-  };
-
-  // --- meadow top ------------------------------------------------------------
-  {
-    const pos: number[] = [];
-    const col: number[] = [];
-    const idx: number[] = [];
-
-    const push = (x: number, y: number, z: number): number => {
-      pos.push(x, y, z);
-      const tone = noise(x * 0.85 + 21, z * 0.85 + 13);
-      tmp.copy(grassDeep).lerp(grassLight, tone);
-      tmp.lerp(dirt, smoothstep((Math.hypot(x, z) / R0 - 0.85) / 0.15) * 0.85);
-      col.push(tmp.r, tmp.g, tmp.b);
-      return pos.length / 3 - 1;
-    };
-
-    const K = 8; // radial rings
-    push(0, topY(0, 0), 0);
-    for (let k = 1; k <= K; k++) {
-      const t = k / K;
-      for (let i = 0; i < S; i++) {
-        const a = (i / S) * Math.PI * 2;
-        const r = silhouette(i) * t;
-        const x = Math.cos(a) * r;
-        const z = Math.sin(a) * r;
-        push(x, topY(x, z), z);
-      }
-    }
-    const ring = (k: number) => 1 + (k - 1) * S;
-    for (let i = 0; i < S; i++) idx.push(0, ring(1) + ((i + 1) % S), ring(1) + i);
-    for (let k = 1; k < K; k++) {
-      for (let i = 0; i < S; i++) {
-        const j = (i + 1) % S;
-        const a = ring(k) + i;
-        const b = ring(k) + j;
-        const c = ring(k + 1) + i;
-        const d = ring(k + 1) + j;
-        idx.push(a, d, c, a, b, d);
-      }
-    }
-
-    group.add(makeMesh(pos, col, idx));
+  // a couple of rooted boulders sticking out of the cone
+  const rng = makeRng(4242);
+  for (let i = 0; i < 3; i++) {
+    const theta = rng() * Math.PI * 2;
+    const rad = 2.2 + rng() * 1.6;
+    const s = 0.28 + rng() * 0.22;
+    const boulder = new THREE.Mesh(new THREE.DodecahedronGeometry(s, 0), mats.rockDeep);
+    boulder.position.set(Math.cos(theta) * rad, -2.2 - rng() * 1.6, Math.sin(theta) * rad);
+    boulder.rotation.set(rng() * 3, rng() * 3, rng() * 3);
+    boulder.castShadow = false;
+    group.add(boulder);
   }
 
-  // --- craggy rock underside ---------------------------------------------------
-  {
-    const pos: number[] = [];
-    const col: number[] = [];
-    const idx: number[] = [];
-    const M = 9;
-    const tipX = -0.85;
-    const tipZ = -0.55;
-
-    const depthAt = (i: number): number =>
-      5.4 * (0.82 + 0.36 * noise(Math.cos((i / S) * Math.PI * 2) * 1.5 + 17, Math.sin((i / S) * Math.PI * 2) * 1.5 + 23));
-
-    const push = (x: number, y: number, z: number, t: number, grayness: number): number => {
-      pos.push(x, y, z);
-      tmp.copy(rockTop).lerp(rockDeep, smoothstep(t));
-      tmp.lerp(rockGray, grayness);
-      col.push(tmp.r, tmp.g, tmp.b);
-      return pos.length / 3 - 1;
-    };
-
-    for (let j = 0; j <= M; j++) {
-      const t = j / M;
-      for (let i = 0; i < S; i++) {
-        const a = (i / S) * Math.PI * 2;
-        const jag = 0.86 + 0.3 * noise(Math.cos(a) * 2.4 + t * 3.3, Math.sin(a) * 2.4 + 9 + t * 2.1);
-        const shrink = j === 0 ? 1 : Math.pow(1 - t, 0.72) * jag;
-        const r = silhouette(i) * shrink;
-        const drift = t * t;
-        const x = Math.cos(a) * r + tipX * drift;
-        const z = Math.sin(a) * r + tipZ * drift;
-        const y = j === 0 ? topY(x, z) : -depthAt(i) * Math.pow(t, 1.12);
-        const grayness = noise(Math.cos(a) * 3.1 + 31 * t, Math.sin(a) * 3.1 + 5) * 0.45;
-        push(x, y, z, t, grayness);
-      }
-    }
-    const ring = (j: number) => j * S;
-    for (let j = 0; j < M; j++) {
-      for (let i = 0; i < S; i++) {
-        const k = (i + 1) % S;
-        const a = ring(j) + i;
-        const b = ring(j) + k;
-        const c = ring(j + 1) + i;
-        const d = ring(j + 1) + k;
-        idx.push(a, b, d, a, d, c);
-      }
-    }
-    const tipIndex = push(tipX * 1.25, -5.9, tipZ * 1.25, 1, 0.1);
-    for (let i = 0; i < S; i++) idx.push(ring(M) + i, ring(M) + ((i + 1) % S), tipIndex);
-
-    group.add(makeMesh(pos, col, idx));
+  // companion mini-rocks drifting alongside
+  const companions: { g: THREE.Group; baseY: number; phase: number; spin: number }[] = [];
+  const capGeo = new THREE.CylinderGeometry(1, 0.92, 0.3, 9);
+  for (const c of COMPANIONS) {
+    const g = new THREE.Group();
+    const rockGeo = new THREE.DodecahedronGeometry(c.s, 0);
+    const rock = new THREE.Mesh(rockGeo, mats.rock);
+    rock.scale.y = 0.85;
+    rock.position.y = -c.s * 0.5;
+    g.add(rock);
+    const cap = new THREE.Mesh(capGeo, mats.grass);
+    cap.scale.set(c.s, 1, c.s);
+    cap.position.y = -c.s * 0.12;
+    cap.material = mats.grass;
+    g.add(cap);
+    g.position.set(c.x, c.y, c.z);
+    group.add(g);
+    companions.push({ g, baseY: c.y, phase: c.phase, spin: 0.04 + rng() * 0.05 });
   }
 
-  return { group, topY };
+  return {
+    group,
+    groundY: (x, z) => ground(x, z).y,
+    update(dt, time, reduced) {
+      const amp = reduced ? 0.05 : 0.16;
+      const spin = reduced ? 0 : 1;
+      for (const c of companions) {
+        c.g.position.y = c.baseY + Math.sin(time * 0.45 + c.phase) * amp;
+        c.g.rotation.y += c.spin * spin * dt;
+      }
+    },
+  };
 }

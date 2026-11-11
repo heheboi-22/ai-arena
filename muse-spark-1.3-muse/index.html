@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f3e9d7" />
+    <meta
+      name="description"
+      content="Pocket World: a tiny floating island diorama in Three.js. Orbit it, slide the sun through a full day, summon the rain, raise the wind, and switch the little house lights on."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 16c3.5-2.4 20.5-2.4 24 0-1 1.8-2.8 2.8-5 3l-3.5 6.6c-.9 1.7-2.6 1.7-3.5 0L13 21l-2 .9-3-3.4C6 18.2 4.8 17.4 4 16Z' fill='%237d6a53'/%3E%3Cpath d='M4 16c3.5-3 20.5-3 24 0-3.5 1.8-20.5 1.8-24 0Z' fill='%2389b45e'/%3E%3Cpath d='M12.5 13.6V9.8h7v3.8Z' fill='%23f6ead2'/%3E%3Cpath d='m11.2 10.2 4.8-4 4.8 4Z' fill='%23b45f45'/%3E%3Crect x='18.2' y='6.4' width='1.6' height='2.6' fill='%238a6f55'/%3E%3C/svg%3E"
+    />
+    <title>Pocket World</title>
+  </head>
+  <body>
+    <canvas
+      id="scene"
+      tabindex="0"
+      aria-label="Pocket World, an interactive 3D floating island. Drag to orbit, scroll or pinch to zoom, use the arrow keys to orbit and plus and minus to zoom when this canvas is focused. Click the house to switch its lights."
+    ></canvas>
+
+    <div id="fallback" hidden>
+      <div class="fallback-card">
+        <h1>Pocket World</h1>
+        <p>
+          Sorry — this little island needs WebGL to float, and your browser could not start it.
+          Try a recent version of Chrome, Edge, Firefox or Safari, and check that hardware
+          acceleration is turned on.
+        </p>
+      </div>
+    </div>
+
+    <aside id="panel" aria-label="Pocket World controls" data-open="true">
+      <header class="panel-head">
+        <div class="brand">
+          <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+            <path
+              d="M4 16c3.5-2.4 20.5-2.4 24 0-1 1.8-2.8 2.8-5 3l-3.5 6.6c-.9 1.7-2.6 1.7-3.5 0L13 21l-2 .9-3-3.4C6 18.2 4.8 17.4 4 16Z"
+              fill="#7d6a53"
+            />
+            <path d="M4 16c3.5-3 20.5-3 24 0-3.5 1.8-20.5 1.8-24 0Z" fill="#89b45e" />
+            <path d="M12.5 13.6V9.8h7v3.8Z" fill="#f6ead2" />
+            <path d="m11.2 10.2 4.8-4 4.8 4Z" fill="#b45f45" />
+            <rect x="18.2" y="6.4" width="1.6" height="2.6" fill="#8a6f55" />
+          </svg>
+          <div class="brand-text">
+            <h1>Pocket World</h1>
+            <p id="summary">16:00 &middot; Clear &middot; Breezy</p>
+          </div>
+        </div>
+        <button
+          id="collapse"
+          type="button"
+          class="icon-btn"
+          aria-expanded="true"
+          aria-controls="panel-body"
+          aria-label="Collapse controls"
+          title="Collapse controls"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="m6 14.5 6-6 6 6" />
+          </svg>
+        </button>
+      </header>
+
+      <div id="panel-body">
+        <section class="control">
+          <div class="row">
+            <label for="time">Time of day</label>
+            <output id="time-label" for="time">16:00 &middot; Afternoon</output>
+          </div>
+          <input
+            id="time"
+            class="range range-time"
+            type="range"
+            min="0"
+            max="24"
+            step="0.1"
+            value="16"
+            aria-describedby="time-label"
+          />
+          <div class="ticks" aria-hidden="true">
+            <span>0</span><span>6</span><span>12</span><span>18</span><span>24</span>
+          </div>
+        </section>
+
+        <section class="control">
+          <span class="control-label" id="weather-label">Weather</span>
+          <div class="seg" role="group" aria-label="Weather" aria-labelledby="weather-label">
+            <button id="w-clear" type="button" class="seg-btn is-active" aria-pressed="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="12" cy="12" r="3.6" />
+                <path
+                  d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M5.6 18.4l1.6-1.6M16.8 7.2l1.6-1.6"
+                />
+              </svg>
+              Clear
+            </button>
+            <button id="w-rain" type="button" class="seg-btn" aria-pressed="false">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  d="M7.2 14.5a4.1 4.1 0 0 1-.7-8.1 5.4 5.4 0 0 1 10.6.9 3.7 3.7 0 0 1-.6 7.2Z"
+                />
+                <path d="m8.6 17.4-.9 2.4M12.4 17.4l-.9 2.4M16.2 17.4l-.9 2.4" />
+              </svg>
+              Rain
+            </button>
+          </div>
+        </section>
+
+        <section class="control">
+          <div class="row">
+            <label for="wind">Wind</label>
+            <output id="wind-label" for="wind">30%</output>
+          </div>
+          <input id="wind" class="range range-wind" type="range" min="0" max="100" step="1" value="30" />
+        </section>
+
+        <section class="control control-row">
+          <div class="lights-wrap">
+            <button
+              id="lights"
+              type="button"
+              class="switch"
+              role="switch"
+              aria-checked="false"
+              aria-describedby="lights-state"
+            >
+              <span class="switch-track" aria-hidden="true"><span class="switch-knob"></span></span>
+              <span class="switch-text">House lights</span>
+            </button>
+            <span id="lights-state" class="state-text">Off</span>
+          </div>
+          <button id="reset" type="button" class="reset-btn">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.2v4.3h4.3" />
+            </svg>
+            Reset
+          </button>
+        </section>
+
+        <footer class="hints">
+          <p>Drag to orbit &middot; Scroll to zoom &middot; Click the house to switch its lights</p>
+        </footer>
+      </div>
+    </aside>
+
+    <button id="expand" type="button" hidden>
+      <svg class="expand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path d="M4 16c3.5-3 20.5-3 24 0-3.5 1.8-20.5 1.8-24 0Z" fill="#89b45e" />
+        <path d="M12.5 13.6V9.8h7v3.8Z" fill="#f6ead2" />
+        <path d="m11.2 10.2 4.8-4 4.8 4Z" fill="#b45f45" />
+      </svg>
+      Pocket World controls
+    </button>
+
+    <p class="sr-only" aria-live="polite" id="announce"></p>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

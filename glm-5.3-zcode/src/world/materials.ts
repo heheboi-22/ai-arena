@@ -1,53 +1,69 @@
 import * as THREE from 'three';
+import { WORLD } from '../palette';
 
 /**
- * Materials are collected here so every module shares instances - one material
- * per surface type keeps draw calls and memory low, and lets systems retint
- * whole families (clouds, glass) in one write.
+ * Shared materials. One instance per surface role; systems that need to
+ * animate a look (cloud graying, window glow) keep a reference to the
+ * singleton so a single property write updates every user of it.
  */
-function std(color: number, opts: Partial<THREE.MeshStandardMaterialParameters> = {}): THREE.MeshStandardMaterial {
-  return new THREE.MeshStandardMaterial({ color, roughness: 0.9, metalness: 0, flatShading: true, ...opts });
+export interface SharedMaterials {
+  grass: THREE.MeshStandardMaterial;
+  rock: THREE.MeshStandardMaterial;
+  rockDeep: THREE.MeshStandardMaterial;
+  sand: THREE.MeshStandardMaterial;
+  dirt: THREE.MeshStandardMaterial;
+  stone: THREE.MeshStandardMaterial;
+  wood: THREE.MeshStandardMaterial;
+  woodDark: THREE.MeshStandardMaterial;
+  trunk: THREE.MeshStandardMaterial;
+  leaf: THREE.MeshStandardMaterial;
+  leaf2: THREE.MeshStandardMaterial;
+  pine: THREE.MeshStandardMaterial;
+  pine2: THREE.MeshStandardMaterial;
+  cloud: THREE.MeshStandardMaterial;
 }
 
-export const M = {
-  wall: std(0xf2e6cd, { roughness: 0.85 }),
-  woodDark: std(0x6e4b2f),
-  woodMid: std(0x8f6a44),
-  roof: std(0xb65a40, { roughness: 0.8 }),
-  roofDark: std(0x97452f, { roughness: 0.85 }),
-  stone: std(0xb0a89a),
-  stoneDark: std(0x8d8577),
-  metal: std(0x5a5148, { roughness: 0.5, metalness: 0.6 }),
-  gold: std(0xd9b36a, { roughness: 0.4, metalness: 0.5 }),
+export function createMaterials(): SharedMaterials {
+  const std = (color: number, rough = 0.9, flat = false) =>
+    new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: 0, flatShading: flat });
 
-  trunk: std(0x7a5a3a),
-  leafA: std(0x6fae5c),
-  leafB: std(0x8cc06b),
-  leafC: std(0x4f9350),
-  conifer: std(0x4c8a55),
+  return {
+    // vertex colors carry the meadow variation; base color must stay white
+    grass: new THREE.MeshStandardMaterial({
+      color: 0xffffff, vertexColors: true, roughness: 0.95, metalness: 0,
+    }),
+    rock: std(WORLD.rock, 0.96, true),
+    rockDeep: std(WORLD.rockDeep, 0.98, true),
+    sand: std(WORLD.sand, 0.95),
+    dirt: std(WORLD.dirt, 0.95),
+    stone: std(WORLD.stone, 0.9, true),
+    wood: std(WORLD.wood, 0.85),
+    woodDark: std(WORLD.woodDark, 0.9),
+    trunk: std(WORLD.trunk, 0.95),
+    leaf: std(WORLD.leaf1, 0.9, true),
+    leaf2: std(WORLD.leaf2, 0.9, true),
+    pine: std(WORLD.pine, 0.92, true),
+    pine2: std(WORLD.pine2, 0.92, true),
+    // one material for every cloud puff so weather can tint them together
+    cloud: new THREE.MeshStandardMaterial({
+      color: WORLD.cloud, roughness: 1, metalness: 0, flatShading: true,
+    }),
+  };
+}
 
-  sand: std(0xd9c08c, { roughness: 1 }),
-  water: new THREE.MeshStandardMaterial({
-    color: 0x5e9fb8,
-    roughness: 0.14,
-    metalness: 0.08,
-    transparent: true,
-    opacity: 0.9,
-  }),
-
-  /** Shared by every window pane and lantern - the glow system drives emissiveIntensity. */
-  glass: new THREE.MeshStandardMaterial({
-    color: 0x3a3327,
-    emissive: 0xffb95e,
-    emissiveIntensity: 0,
-    roughness: 0.4,
-  }),
-
-  cloud: std(0xffffff, { roughness: 1, flatShading: true }),
-  smoke: new THREE.MeshBasicMaterial({ color: 0xe8e4da, transparent: true, opacity: 0.4, depthWrite: false }),
-
-  flowerStem: std(0x5c8a4a),
-  flowers: [std(0xe8875f), std(0xeec559), std(0xf4efe4), std(0xd97b9c)],
-
-  ripple: new THREE.MeshBasicMaterial({ color: 0xdff1f5, transparent: true, opacity: 0, depthWrite: false }),
-};
+/** Soft radial sprite texture used by smoke and waterfall mist. */
+export function makeSoftDotTexture(): THREE.Texture {
+  const size = 64;
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext('2d')!;
+  const g = ctx.createRadialGradient(size / 2, size / 2, 1, size / 2, size / 2, size / 2);
+  g.addColorStop(0, 'rgba(255,255,255,1)');
+  g.addColorStop(0.45, 'rgba(255,255,255,0.55)');
+  g.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, size, size);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}

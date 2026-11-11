@@ -1,84 +1,57 @@
 import { damp } from './lib/math';
 
+export type Weather = 'clear' | 'rain';
+
+/** The one source of truth for every controllable aspect of the world. */
 export const DEFAULTS = {
   hour: 16,
-  wind: 0.3,
-  rain: false,
-  lightsOn: false,
-} as const;
+  weather: 'clear' as Weather,
+  wind: 0.3, // 0..1
+  lights: false,
+};
 
 /**
- * Single coherent application state. The UI (and house clicks) write *target*
- * values; the render loop advances the smoothed values toward them with
- * frame-rate independent damping. Every scene effect reads the smoothed
- * values, so rapid control changes simply retarget the same glide - there are
- * never competing animations or half-applied states.
+ * Targets are what the user asked for; the smoothed values are what the scene
+ * shows. Every system reads the smoothed values, which converge on the
+ * targets with exponential damping — so rapid control changes simply retarget
+ * the same motion instead of fighting over animations.
  */
 export class AppState {
-  // --- targets (written by UI / picks) -------------------------------------
-  hourTarget: number = DEFAULTS.hour;
-  windTarget: number = DEFAULTS.wind;
-  rainTarget = DEFAULTS.rain ? 1 : 0;
-  lightsOn = false;
+  // user targets
+  hour = DEFAULTS.hour;
+  weather: Weather = DEFAULTS.weather;
+  wind = DEFAULTS.wind;
+  lights = DEFAULTS.lights;
 
-  // --- smoothed values (read by the scene every frame) ----------------------
-  hour: number = DEFAULTS.hour;
-  /** 0 = dry, 1 = full rain; eased over ~2.4s so weather crossfades. */
-  rainAmount = 0;
-  /** Smoothed wind 0..1. */
-  wind: number = DEFAULTS.wind;
-  /** 0..1 glow of the house windows / porch light. */
-  lightGlow = 0;
+  // smoothed scene values (updated in `update`)
+  sHour = DEFAULTS.hour;
+  sRain = 0;
+  sWind = DEFAULTS.wind;
+  sLights = 0;
 
-  /** Effective wind direction on the horizontal plane, shared by everything. */
-  readonly windDir = { x: 0.83, z: 0.56 };
-
+  /** True once the user asked for reduced decorative motion. */
   reducedMotion = false;
 
-  private listeners = new Set<() => void>();
-
-  onChange(fn: () => void): () => void {
-    this.listeners.add(fn);
-    return () => this.listeners.delete(fn);
-  }
-
-  private emit(): void {
-    for (const fn of this.listeners) fn();
-  }
-
-  setHour(hour: number): void {
-    this.hourTarget = hour;
-    this.emit();
-  }
-
-  setRain(rain: boolean): void {
-    this.rainTarget = rain ? 1 : 0;
-    this.emit();
-  }
-
-  setWind(wind: number): void {
-    this.windTarget = Math.min(1, Math.max(0, wind));
-    this.emit();
-  }
-
-  toggleLights(): void {
-    this.lightsOn = !this.lightsOn;
-    this.emit();
+  update(dt: number): void {
+    const rainTarget = this.weather === 'rain' ? 1 : 0;
+    this.sHour = damp(this.sHour, this.hour, 2.6, dt);
+    this.sRain = damp(this.sRain, rainTarget, 1.5, dt);
+    this.sWind = damp(this.sWind, this.wind, 2.4, dt);
+    this.sLights = damp(this.sLights, this.lights ? 1 : 0, 7, dt);
   }
 
   reset(): void {
-    this.hourTarget = DEFAULTS.hour;
-    this.rainTarget = 0;
-    this.windTarget = DEFAULTS.wind;
-    this.lightsOn = false;
-    this.emit();
+    this.hour = DEFAULTS.hour;
+    this.weather = DEFAULTS.weather;
+    this.wind = DEFAULTS.wind;
+    this.lights = DEFAULTS.lights;
   }
+}
 
-  /** Advance smoothed values. `dt` is already clamped by the render loop. */
-  update(dt: number): void {
-    this.hour = damp(this.hour, this.hourTarget, 0.0005, dt);
-    this.rainAmount = damp(this.rainAmount, this.rainTarget, 0.32, dt);
-    this.wind = damp(this.wind, this.windTarget, 0.02, dt);
-    this.lightGlow = damp(this.lightGlow, this.lightsOn ? 1 : 0, 0.002, dt);
-  }
+export interface WorldContext {
+  state: AppState;
+  /** elapsed seconds (for cyclic animation phases) */
+  time: number;
+  /** clamped frame delta */
+  dt: number;
 }

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#6da6da" />
+    <meta name="description" content="Pocket World: a tiny floating island you can orbit, light up, and send weather over." />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <title>Pocket World</title>
+  </head>
+  <body>
+    <div id="stage">
+      <canvas id="scene" aria-label="A tiny floating island with a cottage, a windmill, a pond and trees. Drag to orbit, scroll or pinch to zoom, tap the cottage to toggle its lights."></canvas>
+    </div>
+
+    <aside class="panel" id="panel" aria-label="World controls">
+      <header class="panel__head">
+        <div class="panel__title">
+          <svg class="panel__mark" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M4 15.500c2.6-3.6 7-5.5 12-5.500s9.4 1.9 12 5.500c-1.5 1.2-3.2 1.8-5 2L20 25.5 16 29l-4-3.5-3-8c-1.8-.2-3.5-.8-5-2z" fill="currentColor" opacity=".32"/>
+            <path d="M3.5 15.500C6 11.8 10.7 9.5 16 9.500s10 2.3 12.5 6c-3.3 1.8-7.6 2.7-12.5 2.700s-9.2-.9-12.5-2.700z" fill="currentColor"/>
+            <path d="M12.5 11V6.800L16 4l3.5 2.800V11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+          </svg>
+          <div>
+            <h1>Pocket World</h1>
+            <p class="panel__sub" id="summary">16:00 · Clear</p>
+          </div>
+        </div>
+        <button class="icon-btn" id="collapse" type="button" aria-expanded="true" aria-controls="controls">
+          <span class="sr-only">Hide controls</span>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </header>
+
+      <div class="panel__body" id="controls">
+        <div class="field field--time">
+          <div class="field__row">
+            <label for="time">Time of day</label>
+            <output id="time-out" for="time"><b>16:00</b> Afternoon</output>
+          </div>
+          <input id="time" class="slider slider--day" type="range" min="0" max="1435" step="5" value="960" />
+          <div class="ticks" aria-hidden="true"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div>
+        </div>
+
+        <fieldset class="field field--weather">
+          <legend>Weather</legend>
+          <div class="segmented">
+            <input type="radio" name="weather" id="weather-clear" value="clear" checked />
+            <label for="weather-clear">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="currentColor"/><g stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M10 2.200v2M10 15.800v2M2.2 10h2M15.8 10h2M4.5 4.500l1.4 1.400M14.1 14.100l1.4 1.400M4.5 15.500l1.4-1.400M14.1 5.900l1.4-1.4"/></g></svg>
+              Clear
+            </label>
+            <input type="radio" name="weather" id="weather-rain" value="rain" />
+            <label for="weather-rain">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.8 11.500a3.3 3.3 0 01.3-6.6 4.4 4.4 0 018.3 1.2 2.7 2.7 0 01-.400 5.400z" fill="currentColor"/><g stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M7 14l-.9 2.600M10.5 14l-.9 2.600M14 14l-.9 2.6"/></g></svg>
+              Rain
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="field field--wind">
+          <div class="field__row">
+            <label for="wind">Wind</label>
+            <output id="wind-out" for="wind"><b>30%</b> Breeze</output>
+          </div>
+          <input id="wind" class="slider" type="range" min="0" max="100" step="1" value="30" />
+        </div>
+
+        <div class="field field--actions">
+          <button class="switch" id="lights" type="button" role="switch" aria-checked="false">
+            <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+            <span class="switch__label">House lights</span>
+            <span class="switch__state" id="lights-state">Off</span>
+          </button>
+          <button class="btn" id="reset" type="button">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.5 10a5.5 5.5 0 109.8-3.400M14.5 3v3.800h-3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" transform="matrix(-1 0 0 1 20 0)"/></svg>
+            Reset
+          </button>
+        </div>
+
+        <p class="hint">Drag to orbit · scroll or pinch to zoom · tap the cottage to switch its lights.</p>
+      </div>
+    </aside>
+
+    <div class="fallback" id="fallback" role="alert" hidden>
+      <h2>Pocket World can’t start here</h2>
+      <p id="fallback-text">This browser or device doesn’t have WebGL 2 available, so the island can’t be drawn. Try a current version of Chrome, Firefox, Safari or Edge, and check that hardware acceleration is switched on.</p>
+    </div>
+    <div class="sr-only" id="live" aria-live="polite"></div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,86 +1,76 @@
 import * as THREE from 'three';
-import { M } from './materials';
-import { LAYOUT } from './layout';
-import type { Frame } from '../lib/frame';
-import type { Island } from './island';
+import { damp } from '../lib/math';
+import { WORLD } from '../palette';
+import { WINDMILL } from './layout';
+import type { SharedMaterials } from './materials';
 
 export interface Windmill {
   group: THREE.Group;
-  update(f: Frame): void;
+  update: (dt: number, wind: number) => void;
 }
 
-/** Stone windmill on its own mound; blade speed follows the shared wind state. */
-export function makeWindmill(island: Island): Windmill {
+export function createWindmill(
+  mats: SharedMaterials,
+  groundY: (x: number, z: number) => number,
+): Windmill {
   const group = new THREE.Group();
-  const { x, z } = LAYOUT.windmill;
-  group.position.set(x, island.topY(x, z) - 0.05, z);
-  group.rotation.y = 0.6; // face the blades toward the pond / default camera
+  group.position.set(WINDMILL.x, groundY(WINDMILL.x, WINDMILL.z) - 0.02, WINDMILL.z);
+  group.rotation.y = WINDMILL.rot;
 
-  const add = (mesh: THREE.Mesh) => {
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    group.add(mesh);
-    return mesh;
-  };
+  const towerMat = new THREE.MeshStandardMaterial({ color: WORLD.creamShade, roughness: 0.92 });
 
-  add(new THREE.Mesh(new THREE.CylinderGeometry(0.78, 0.95, 0.4, 10), M.stoneDark)).position.y = 0.2;
-  add(new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.62, 2.5, 10), M.stone)).position.y = 1.55;
+  // tapered stone tower with a wooden gallery ring
+  const tower = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.46, 1.7, 10), towerMat);
+  tower.position.y = 0.85;
+  tower.castShadow = tower.receiveShadow = true;
+  group.add(tower);
 
-  const cap = add(new THREE.Mesh(new THREE.ConeGeometry(0.58, 0.55, 10), M.roofDark));
-  cap.position.y = 3.05;
+  const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.44, 0.09, 10), mats.woodDark);
+  ring.position.y = 0.36;
+  ring.castShadow = true;
+  group.add(ring);
 
-  const gallery = add(new THREE.Mesh(new THREE.TorusGeometry(0.52, 0.045, 6, 18), M.woodDark));
-  gallery.rotation.x = Math.PI / 2;
-  gallery.position.y = 2.2;
+  const cap = new THREE.Mesh(new THREE.ConeGeometry(0.4, 0.5, 10), mats.woodDark);
+  cap.position.y = 1.93;
+  cap.castShadow = true;
+  group.add(cap);
 
-  const door = add(new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.62, 0.08), M.woodDark));
-  door.position.set(0, 0.62, 0.56);
-  const winFrame = add(new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.36, 0.04), M.woodDark));
-  winFrame.position.set(0, 1.7, 0.47);
-  const win = add(new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.3, 0.05), M.glass));
-  win.position.set(0, 1.7, 0.5);
+  const door = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.42, 0.05), mats.wood);
+  door.position.set(0, 0.35, 0.43);
+  group.add(door);
 
-  // --- hub + four sails --------------------------------------------------------
-  const head = new THREE.Group();
-  head.position.y = 2.78;
-  group.add(head);
-
-  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.34, 8), M.metal);
-  shaft.rotation.x = Math.PI / 2;
-  shaft.position.z = 0.1;
-  shaft.castShadow = true;
-  head.add(shaft);
-
-  const blades = new THREE.Group();
-  blades.position.z = 0.28;
-  head.add(blades);
-
-  const plankGeo = new THREE.BoxGeometry(0.1, 1.2, 0.05);
-  const sailGeo = new THREE.BoxGeometry(0.3, 0.95, 0.02);
+  // hub + four slightly pitched blades, spinning on the local z axis
+  const hubGroup = new THREE.Group();
+  hubGroup.position.set(0, 1.62, 0.4);
+  const axle = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.24, 8), mats.woodDark);
+  axle.rotation.x = Math.PI / 2;
+  axle.position.z = -0.1;
+  hubGroup.add(axle);
+  const hub = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 8), mats.woodDark);
+  hubGroup.add(hub);
+  const bladeGeo = new THREE.BoxGeometry(0.16, 1.05, 0.03);
   for (let i = 0; i < 4; i++) {
-    const arm = new THREE.Group();
-    arm.rotation.z = (i * Math.PI) / 2;
-
-    const plank = new THREE.Mesh(plankGeo, M.woodDark);
-    plank.position.y = 0.68;
-    plank.castShadow = true;
-    const sail = new THREE.Mesh(sailGeo, M.wall);
-    sail.position.set(0.2, 0.74, 0.02);
-    sail.rotation.y = 0.32;
-    sail.castShadow = true;
-
-    arm.add(plank, sail);
-    blades.add(arm);
+    const holder = new THREE.Group();
+    holder.rotation.z = (i * Math.PI) / 2;
+    const blade = new THREE.Mesh(bladeGeo, mats.wood);
+    blade.position.y = 0.6;
+    blade.rotation.y = 0.42; // pitch so the blades read as sails
+    blade.castShadow = true;
+    holder.add(blade);
+    hubGroup.add(holder);
   }
+  group.add(hubGroup);
 
-  let spin = 0;
+  let speed = 0;
+  let angle = 0;
 
   return {
     group,
-    update(f: Frame) {
-      // Stops completely at zero wind; a light breeze just turns it lazily.
-      spin += f.dt * f.wind * 4.6 * (f.reducedMotion ? 0.55 : 1);
-      blades.rotation.z = spin;
+    update(dt, wind) {
+      // blades spin up and wind down with inertia instead of snapping
+      speed = damp(speed, wind * 2.6, 1.4, dt);
+      angle += speed * dt;
+      hubGroup.rotation.z = angle;
     },
   };
 }

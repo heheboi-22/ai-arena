@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#b8d8d2" />
+    <meta name="description" content="A tiny handcrafted floating island. Change the weather, chase the sunset, and make yourself at home." />
+    <title>Pocket World — A tiny floating escape</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232c4a43'/%3E%3Cellipse cx='32' cy='27' rx='22' ry='10' fill='%2398b96d'/%3E%3Cpath d='M12 29 25 53 38 46 51 29' fill='%23947a5c'/%3E%3Cpath d='M25 26V15h14v11' fill='%23f4e7c9'/%3E%3Cpath d='m22 16 10-8 11 8' fill='%23c87557'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <main id="app">
+      <div id="world" role="group" aria-label="Interactive 3D floating island"></div>
+      <div class="vignette" aria-hidden="true"></div>
+
+      <section class="control-panel" aria-label="Pocket World controls">
+        <header class="panel-header">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 42 42"><path d="M8 22 16 36l7-4 11-12" fill="#887158"/><ellipse cx="21" cy="20" rx="15" ry="7" fill="#8fa969"/><path d="M16 19v-8h11v8" fill="#f5e9cd"/><path d="m13 12 8-7 9 7" fill="#bd6d52"/><path d="M20 19v-5h4v5" fill="#635347"/></svg>
+          </div>
+          <div class="brand-copy">
+            <p class="eyebrow">A TINY FLOATING ESCAPE</p>
+            <h1>Pocket World</h1>
+          </div>
+          <button id="panel-toggle" class="icon-button panel-toggle" type="button" aria-label="Collapse controls" aria-expanded="true" aria-controls="panel-body">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 14 5-5 5 5"/></svg>
+          </button>
+        </header>
+
+        <div id="panel-body" class="panel-body">
+          <div class="control time-control">
+            <div class="control-heading">
+              <label for="time"><span class="label-icon" aria-hidden="true">☀</span> Time of day</label>
+              <output id="time-label" for="time">16:00</output>
+            </div>
+            <input id="time" type="range" min="0" max="24" step="0.05" value="16" aria-valuetext="16:00" />
+            <div class="range-captions" aria-hidden="true"><span>Midnight</span><span>Noon</span><span>Midnight</span></div>
+          </div>
+
+          <div class="control weather-control">
+            <span class="control-label" id="weather-label">Weather</span>
+            <div class="segmented" role="group" aria-labelledby="weather-label">
+              <button id="weather-clear" class="segment active" type="button" aria-pressed="true">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
+                Clear
+              </button>
+              <button id="weather-rain" class="segment" type="button" aria-pressed="false">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 15a4 4 0 1 1 .8-7.9A5 5 0 0 1 17 8a3.5 3.5 0 0 1 .5 7M8 18l-1 2m5-2-1 2m5-2-1 2"/></svg>
+                Rain
+              </button>
+            </div>
+          </div>
+
+          <div class="control wind-control">
+            <div class="control-heading">
+              <label for="wind"><span class="label-icon wind-glyph" aria-hidden="true">≋</span> Wind</label>
+              <output id="wind-label" for="wind">30%</output>
+            </div>
+            <input id="wind" type="range" min="0" max="100" step="1" value="30" aria-valuetext="30 percent" />
+            <div class="range-captions" aria-hidden="true"><span>Still</span><span>Breezy</span></div>
+          </div>
+
+          <div class="control utility-row">
+            <button id="lights" class="light-button" type="button" role="switch" aria-checked="false">
+              <span class="bulb" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18h6m-5 3h4M8.5 14.5a6 6 0 1 1 7 0c-.9.7-1.5 1.4-1.5 2.5h-4c0-1.1-.6-1.8-1.5-2.5Z"/></svg></span>
+              <span>House lights</span><span id="light-state" class="switch-state">Off</span>
+            </button>
+            <button id="reset" class="reset-button" type="button" aria-label="Reset world to its original state">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v6h6M5.5 15a7 7 0 1 0 .5-7L4 10"/></svg>
+              Reset
+            </button>
+          </div>
+
+          <p class="interaction-hint"><span aria-hidden="true">↻</span> Drag to orbit <i>·</i> Scroll to zoom <i>·</i> Tap the house</p>
+        </div>
+      </section>
+
+      <div class="world-caption" aria-hidden="true"><span></span> A little world, at your pace</div>
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+      <div id="loading" class="loading" role="status"><div class="loading-island" aria-hidden="true">✦</div><span>Growing your little world…</span></div>
+      <div id="error" class="error-message" role="alert" hidden><h2>This world needs WebGL</h2><p>Please enable hardware acceleration or try a recent browser with WebGL support.</p></div>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

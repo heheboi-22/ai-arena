@@ -1,82 +1,121 @@
-import type { AppState } from '../app-state';
-import { formatClock } from '../lib/math';
+import type { Weather } from '../app-state';
 
-/**
- * DOM wiring. Every control writes to the shared state and every state change
- * re-syncs the whole panel, so the 3D house click and the UI switch can never
- * drift apart.
- */
-export function makeUI(state: AppState, onResetView: () => void): void {
-  const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
+export interface UIHandlers {
+  onTime: (hour: number) => void;
+  onWeather: (w: Weather) => void;
+  onWind: (v01: number) => void;
+  onLights: (on: boolean) => void;
+  onReset: () => void;
+}
 
-  const panel = $('<HTMLElement>panel');
-  const panelToggle = $<HTMLButtonElement>('panel-toggle');
+export interface UI {
+  syncTime: (hour: number) => void;
+  syncWeather: (w: Weather) => void;
+  syncWind: (v01: number) => void;
+  syncLights: (on: boolean) => void;
+  collapsed: () => boolean;
+}
+
+const fmtHour = (h: number): string => {
+  const hh = Math.floor(h) % 24;
+  const mm = Math.round((h - Math.floor(h)) * 60);
+  const H = mm === 60 ? (hh + 1) % 24 : hh;
+  const M = mm === 60 ? 0 : mm;
+  return `${String(H).padStart(2, '0')}:${String(M).padStart(2, '0')}`;
+};
+
+export function createUI(handlers: UIHandlers): UI {
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const panel = $('panel') as HTMLElement;
+  const head = $('panel-head');
+  const toggle = $<HTMLButtonElement>('panel-toggle');
+  const body = $('panel-body');
   const timeSlider = $<HTMLInputElement>('time-slider');
-  const timeValue = $<HTMLOutputElement>('time-value');
-  const weatherClear = $<HTMLButtonElement>('weather-clear');
-  const weatherRain = $<HTMLButtonElement>('weather-rain');
-  const weatherValue = $<HTMLOutputElement>('weather-value');
+  const timeLabel = $('time-label');
+  const clearBtn = $<HTMLButtonElement>('weather-clear');
+  const rainBtn = $<HTMLButtonElement>('weather-rain');
   const windSlider = $<HTMLInputElement>('wind-slider');
-  const windValue = $<HTMLOutputElement>('wind-value');
+  const windLabel = $('wind-label');
   const lightsToggle = $<HTMLButtonElement>('lights-toggle');
-  const lightsState = $('<HTMLElement>lights-state');
   const resetBtn = $<HTMLButtonElement>('reset-btn');
 
-  const setFill = (el: HTMLInputElement): void => {
-    const min = Number(el.min);
-    const max = Number(el.max);
-    el.style.setProperty('--fill', `${((Number(el.value) - min) / (max - min)) * 100}%`);
+  const setCollapsed = (c: boolean) => {
+    panel.classList.toggle('collapsed', c);
+    toggle.setAttribute('aria-expanded', String(!c));
+    toggle.setAttribute('aria-label', c ? 'Expand control panel' : 'Collapse control panel');
   };
 
-  const sync = (): void => {
-    timeSlider.value = String(state.hourTarget);
-    timeValue.textContent = formatClock(state.hourTarget);
-    setFill(timeSlider);
+  // small screens start collapsed so the world is never covered
+  const small = matchMedia('(max-width: 640px), (max-height: 560px)');
+  setCollapsed(small.matches);
+  const onSmallChange = (e: MediaQueryListEvent) => setCollapsed(e.matches);
+  small.addEventListener('change', onSmallChange);
 
-    const raining = state.rainTarget > 0.5;
-    weatherClear.classList.toggle('is-active', !raining);
-    weatherRain.classList.toggle('is-active', raining);
-    weatherClear.setAttribute('aria-pressed', String(!raining));
-    weatherRain.setAttribute('aria-pressed', String(raining));
-    weatherValue.textContent = raining ? 'Rain' : 'Clear';
+  const onHeadClick = () => setCollapsed(!panel.classList.contains('collapsed'));
+  head.addEventListener('click', onHeadClick);
+  // the chevron button lives inside the head; stop the double-toggle
+  toggle.addEventListener('click', (e) => e.stopPropagation());
+  toggle.addEventListener('click', onHeadClick);
 
-    const windPct = Math.round(state.windTarget * 100);
-    windSlider.value = String(windPct);
-    windValue.textContent = `${windPct}%`;
-    setFill(windSlider);
-
-    lightsToggle.setAttribute('aria-checked', String(state.lightsOn));
-    lightsState.textContent = state.lightsOn ? 'On' : 'Off';
+  const paintRange = (el: HTMLInputElement) => {
+    const min = Number(el.min), max = Number(el.max);
+    const pct = ((Number(el.value) - min) / (max - min)) * 100;
+    el.style.setProperty('--fill', `${pct}%`);
   };
 
-  state.onChange(sync);
-  sync();
-
-  timeSlider.addEventListener('input', () => state.setHour(Number(timeSlider.value)));
-  weatherClear.addEventListener('click', () => state.setRain(false));
-  weatherRain.addEventListener('click', () => state.setRain(true));
-  windSlider.addEventListener('input', () => state.setWind(Number(windSlider.value) / 100));
-  lightsToggle.addEventListener('click', () => state.toggleLights());
-  resetBtn.addEventListener('click', () => {
-    state.reset();
-    onResetView();
+  timeSlider.addEventListener('input', () => {
+    paintRange(timeSlider);
+    timeLabel.textContent = fmtHour(Number(timeSlider.value));
+    handlers.onTime(Number(timeSlider.value));
+  });
+  windSlider.addEventListener('input', () => {
+    paintRange(windSlider);
+    windLabel.textContent = `${windSlider.value}%`;
+    handlers.onWind(Number(windSlider.value) / 100);
   });
 
-  const setCollapsed = (collapsed: boolean): void => {
-    panel.dataset.collapsed = String(collapsed);
-    panelToggle.setAttribute('aria-expanded', String(!collapsed));
+  const setWeatherButtons = (w: Weather) => {
+    clearBtn.classList.toggle('is-active', w === 'clear');
+    rainBtn.classList.toggle('is-active', w === 'rain');
+    clearBtn.setAttribute('aria-pressed', String(w === 'clear'));
+    rainBtn.setAttribute('aria-pressed', String(w === 'rain'));
   };
-  panelToggle.addEventListener('click', () => setCollapsed(panel.dataset.collapsed !== 'true'));
-
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const applyReduced = (): void => {
-    state.reducedMotion = reduced.matches;
-  };
-  applyReduced();
-  reduced.addEventListener('change', applyReduced);
-
-  // Keyboard shortcut for the house lights (the switch itself is focusable).
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'l' || e.key === 'L') state.toggleLights();
+  clearBtn.addEventListener('click', () => {
+    setWeatherButtons('clear');
+    handlers.onWeather('clear');
   });
+  rainBtn.addEventListener('click', () => {
+    setWeatherButtons('rain');
+    handlers.onWeather('rain');
+  });
+
+  const setLightsButton = (on: boolean) => {
+    lightsToggle.setAttribute('aria-checked', String(on));
+  };
+  lightsToggle.addEventListener('click', () => {
+    const next = lightsToggle.getAttribute('aria-checked') !== 'true';
+    setLightsButton(next);
+    handlers.onLights(next);
+  });
+
+  resetBtn.addEventListener('click', () => handlers.onReset());
+
+  paintRange(timeSlider);
+  paintRange(windSlider);
+
+  return {
+    syncTime(hour) {
+      timeSlider.value = String(hour);
+      paintRange(timeSlider);
+      timeLabel.textContent = fmtHour(hour);
+    },
+    syncWeather: setWeatherButtons,
+    syncWind(v01) {
+      windSlider.value = String(Math.round(v01 * 100));
+      paintRange(windSlider);
+      windLabel.textContent = `${Math.round(v01 * 100)}%`;
+    },
+    syncLights: setLightsButton,
+    collapsed: () => panel.classList.contains('collapsed'),
+  };
 }

@@ -49,7 +49,15 @@
 	import route_model glm-5.3-codebuddy 5129
 	import route_model kimi-k2.8-codebuddy 5130
 	import route_model deepseek-v4.1-flash-1017-dsh 5131
+	import route_model glm-5.3-zcode 5132
+	import route_model kimi-k3.1-pro-workbuddy 5133
+	import route_model gpt-6.1-terra-codex 5134
+	import route_model hy3-workbuddy 5135
 	import route_model deepseek-v4.1-flash-1017-coreweave 5136
+	import route_model muse-spark-1.3-muse 5137
+	import route_model hy-4-workbuddy 5138
+	import route_model claude-fable-5.2-claude 5139
+	import route_model gemini-4-carbon-coarena 5140
 
 	# --------------------------------------------------------------------------
 	# Aggregator Dashboard & Static Assets

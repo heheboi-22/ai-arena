@@ -1,80 +1,81 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#8ec5d6" />
-    <title>Pocket World</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='17' r='12' fill='%237cb56b'/%3E%3Cpath d='M6 20 Q16 32 26 20 L21 30 H11 Z' fill='%238a7968'/%3E%3Crect x='11' y='10' width='10' height='8' rx='1' fill='%23f3e9d2'/%3E%3Cpath d='M10 11 L16 6 L22 11 Z' fill='%23b3593a'/%3E%3C/svg%3E" />
-  </head>
-  <body>
-    <div id="app" aria-label="Pocket World 3D scene"></div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="description" content="Pocket World — a handcrafted interactive 3D diorama of a tiny floating island, generated entirely from code." />
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <title>Pocket World</title>
+</head>
+<body>
+  <div id="scene" aria-label="Pocket World 3D diorama"></div>
 
-    <p id="webgl-error" hidden>
-      Pocket World needs WebGL to run, but this browser or device could not create a
-      working WebGL context. Try a recent version of Chrome, Edge, Firefox or Safari
-      with hardware acceleration enabled.
-    </p>
+  <p id="webgl-fallback" hidden>
+    <strong>Pocket World needs WebGL.</strong><br />
+    This browser could not create a 3D context, so the island cannot be shown.
+    Try a current version of Firefox, Chrome or Safari with hardware
+    acceleration enabled.
+  </p>
 
-    <section id="panel" aria-labelledby="panel-title">
-      <button id="panel-toggle" type="button" aria-expanded="true" aria-controls="panel-body">
-        <span id="panel-title">Pocket World</span>
-        <svg id="panel-chevron" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
-          <path d="M3 6 L8 11 L13 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  <section id="panel" aria-label="Pocket World controls">
+    <header id="panel-head">
+      <div id="panel-title">
+        <svg id="panel-glyph" viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="26" r="20" fill="#7cb668"/>
+          <path d="M12 26c0 14 8 24 20 30 12-6 20-16 20-30z" fill="#8d7b6a"/>
+          <rect x="24" y="18" width="16" height="13" rx="1.5" fill="#f4e9d4"/>
+          <path d="M21 31l11-9 11 9z" fill="#c2603f"/>
+          <rect x="30" y="23" width="4" height="8" rx="1" fill="#8a5a3b"/>
         </svg>
-      </button>
-
-      <div id="panel-body">
-        <div class="field time-field">
-          <div class="field-head">
-            <label for="time-slider">Time of day</label>
-            <output id="time-value" for="time-slider">16:00</output>
-          </div>
-          <input id="time-slider" type="range" min="0" max="24" step="0.05" value="16"
-                 aria-label="Time of day, 24 hour clock" aria-describedby="time-hint" />
-          <div class="scale"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div>
-          <p id="time-hint" class="hint">Drag through sunset and night; the island follows.</p>
-        </div>
-
-        <div class="field">
-          <div class="field-head">
-            <span class="label-text" id="weather-label">Weather</span>
-            <output id="weather-value" for="weather-label">Clear</output>
-          </div>
-          <div class="segmented" role="group" aria-labelledby="weather-label">
-            <button type="button" id="weather-clear" class="seg-btn is-active" aria-pressed="true">Clear</button>
-            <button type="button" id="weather-rain" class="seg-btn" aria-pressed="false">Rain</button>
-          </div>
-        </div>
-
-        <div class="field">
-          <div class="field-head">
-            <label for="wind-slider">Wind</label>
-            <output id="wind-value" for="wind-slider">30%</output>
-          </div>
-          <input id="wind-slider" type="range" min="0" max="100" step="1" value="30"
-                 aria-label="Wind strength" />
-        </div>
-
-        <div class="field row">
-          <div class="field-head">
-            <span class="label-text" id="lights-label">House lights</span>
-          </div>
-          <button type="button" id="lights-toggle" class="toggle-btn" role="switch"
-                  aria-checked="false" aria-labelledby="lights-label">
-            <span class="knob-track" aria-hidden="true"><span class="knob"></span></span>
-            <span id="lights-state">Off</span>
-          </button>
-        </div>
-
-        <button type="button" id="reset-btn" class="reset-btn">Reset world</button>
-
-        <p class="hint interaction-hint">
-          Drag to orbit, scroll or pinch to zoom, tap the house to toggle its lights.
-        </p>
+        <h1>Pocket World</h1>
       </div>
-    </section>
+      <button id="panel-toggle" type="button" aria-expanded="true" aria-controls="panel-body"
+              title="Collapse panel" aria-label="Collapse control panel">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </header>
 
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+    <div id="panel-body">
+      <div class="ctl">
+        <div class="ctl-head">
+          <label for="time-slider">Time of day</label>
+          <output id="time-label" for="time-slider">16:00</output>
+        </div>
+        <input id="time-slider" type="range" min="0" max="24" step="0.25" value="16"
+               aria-label="Time of day, 24 hour clock" />
+        <div class="ticks" aria-hidden="true"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div>
+      </div>
+
+      <div class="ctl">
+        <div class="ctl-head"><span class="ctl-name" id="weather-label">Weather</span></div>
+        <div id="weather-buttons" class="segmented" role="group" aria-labelledby="weather-label">
+          <button id="weather-clear" type="button" class="seg-btn is-active" aria-pressed="true">Clear</button>
+          <button id="weather-rain" type="button" class="seg-btn" aria-pressed="false">Rain</button>
+        </div>
+      </div>
+
+      <div class="ctl">
+        <div class="ctl-head">
+          <label for="wind-slider">Wind</label>
+          <output id="wind-label" for="wind-slider">30%</output>
+        </div>
+        <input id="wind-slider" type="range" min="0" max="100" step="1" value="30"
+               aria-label="Wind strength, percent" />
+      </div>
+
+      <div class="ctl row">
+        <label id="lights-label" for="lights-toggle">House lights</label>
+        <button id="lights-toggle" type="button" role="switch" aria-checked="false" aria-labelledby="lights-label"
+                class="switch"><span class="knob"></span></button>
+      </div>
+
+      <button id="reset-btn" type="button">Reset world</button>
+
+      <p id="hint">Drag to orbit &middot; scroll or pinch to zoom &middot; tap the house to light it up</p>
+    </div>
+  </section>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>

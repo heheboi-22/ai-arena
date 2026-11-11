@@ -3,20 +3,20 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Pocket World - an interactive Three.js diorama of a tiny floating island.",
+  "description": "Pocket World — an interactive Three.js diorama of a tiny floating island, built entirely from code.",
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "serve": "npx -y serve -s -l 5121 dist"
+    "serve": "npx -y serve -s -l 5132 dist"
   },
   "dependencies": {
-    "three": "^0.180.0"
+    "three": "^0.186.1"
   },
   "devDependencies": {
-    "@types/three": "^0.180.0",
-    "typescript": "^5.6.3",
-    "vite": "^6.3.5"
+    "@types/three": "^0.186.0",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.4"
   }
 }

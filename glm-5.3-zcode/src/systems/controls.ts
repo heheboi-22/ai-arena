@@ -1,71 +1,66 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { clamp, damp } from '../lib/math';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { easeInOutCubic } from '../lib/math';
+import { CAMERA_START } from '../world/layout';
 
-export interface Controls {
+export interface CameraRig {
   controls: OrbitControls;
-  /** Advances damping and any reset animation; call once per frame. */
-  update(dt: number): void;
-  /** Glide the camera back to the opening composition. */
-  resetView(): void;
+  /** smooth flight home; cancelled the moment the user grabs the camera */
+  flyHome: (durationMs?: number) => void;
+  update: (dt: number) => void;
 }
 
-/**
- * Orbit controls with damping, bounded distance/angles, a clamped pan target
- * so the island can never leave the frame, and an eased reset flight.
- */
-export function makeControls(camera: THREE.PerspectiveCamera, dom: HTMLElement, target: THREE.Vector3): Controls {
-  const controls = new OrbitControls(camera, dom);
-  controls.target.copy(target);
+export function createControls(camera: THREE.PerspectiveCamera, canvas: HTMLElement): CameraRig {
+  const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
-  controls.dampingFactor = 0.07;
-  controls.rotateSpeed = 0.6;
-  controls.zoomSpeed = 0.9;
-  controls.minDistance = 9;
+  controls.dampingFactor = 0.06;
+  controls.rotateSpeed = 0.75;
+  controls.zoomSpeed = 0.85;
+  controls.enablePan = false; // the island stays the hero of every frame
+  controls.minDistance = 8.5;
   controls.maxDistance = 24;
-  controls.minPolarAngle = 0.5;
-  controls.maxPolarAngle = 2.12; // let users peek at the floating underside
-  controls.enablePan = true;
-  controls.panSpeed = 0.6;
-  controls.screenSpacePanning = false;
+  controls.minPolarAngle = 0.18;
+  controls.maxPolarAngle = 1.92; // a little past horizontal to peek below
+  controls.target.set(...CAMERA_START.target);
 
-  const homePos = camera.position.clone();
-  const homeTarget = controls.target.clone();
+  // portrait screens pull back (kept in sync with main.ts) so reset restores
+  // the same responsive framing the page loaded with
+  const homePos = new THREE.Vector3(...CAMERA_START.pos);
+  if (camera.aspect < 0.8) homePos.multiplyScalar(1.24);
+  const homeTarget = new THREE.Vector3(...CAMERA_START.target);
 
-  let flying = false;
+  let tween: {
+    fromPos: THREE.Vector3;
+    fromTarget: THREE.Vector3;
+    t: number;
+    dur: number;
+    instant: boolean;
+  } | null = null;
+
   controls.addEventListener('start', () => {
-    flying = false; // user grabbed the camera mid-flight
+    tween = null;
   });
 
   return {
     controls,
-    update(dt: number) {
-      if (flying) {
-        const p = camera.position;
-        p.x = damp(p.x, homePos.x, 0.002, dt);
-        p.y = damp(p.y, homePos.y, 0.002, dt);
-        p.z = damp(p.z, homePos.z, 0.002, dt);
-        const t = controls.target;
-        t.x = damp(t.x, homeTarget.x, 0.002, dt);
-        t.y = damp(t.y, homeTarget.y, 0.002, dt);
-        t.z = damp(t.z, homeTarget.z, 0.002, dt);
-        if (p.distanceTo(homePos) < 0.05 && t.distanceTo(homeTarget) < 0.05) {
-          camera.position.copy(homePos);
-          controls.target.copy(homeTarget);
-          flying = false;
-        }
-      }
-
-      // Keep panning inside a small box around the island.
-      const t = controls.target;
-      t.x = clamp(t.x, -4, 4);
-      t.y = clamp(t.y, -3, 2.5);
-      t.z = clamp(t.z, -4, 4);
-
-      controls.update();
+    flyHome(durationMs = 950) {
+      tween = {
+        fromPos: camera.position.clone(),
+        fromTarget: controls.target.clone(),
+        t: 0,
+        dur: durationMs / 1000,
+        instant: false,
+      };
     },
-    resetView() {
-      flying = true;
+    update(dt) {
+      if (tween) {
+        tween.t += dt;
+        const k = easeInOutCubic(Math.min(tween.t / tween.dur, 1));
+        camera.position.lerpVectors(tween.fromPos, homePos, k);
+        controls.target.lerpVectors(tween.fromTarget, homeTarget, k);
+        if (tween.t >= tween.dur) tween = null;
+      }
+      controls.update();
     },
   };
 }

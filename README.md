@@ -1,6 +1,6 @@
 # AI Arena
 
-One brief, thirty-two models, thirty-two takes.
+One brief, forty models, forty takes.
 
 `prompt.txt` asks for "Pocket World": an interactive Three.js diorama of a
 floating island, built from code, with no downloaded models, textures, HDRIs or
@@ -17,7 +17,7 @@ With Docker, which needs nothing else on the machine:
     docker compose up -d --build
     open http://localhost:8080/
 
-The image builds all thirty-two worlds and runs them in a single container. Caddy
+The image builds all forty worlds and runs them in a single container. Caddy
 routes `/<folder>/` to its own static server per world, and only port 8080
 leaves the container. Stopping it again:
 
@@ -44,7 +44,7 @@ become `127.0.0.1:<port>`.
 
 `Dockerfile`, `docker/` and `docker-compose.yml` build the container. Each world
 is built in its own Docker stage, so changing one world rebuilds that world only
-and leaves the other thirty-one cached. Later builds reuse the unchanged stages.
+and leaves the other thirty-nine cached. Later builds reuse the unchanged stages.
 
 `PORT_RULES.md` lists the port of every world, explains where those numbers come
 from, and names the four places to touch when adding another one.
