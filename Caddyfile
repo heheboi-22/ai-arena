@@ -58,6 +58,7 @@
 	import route_model hy-4-workbuddy 5138
 	import route_model claude-fable-5.2-claude 5139
 	import route_model gemini-4-carbon-coarena 5140
+	import route_model gemini-4-hydrogen-antigraivty 5141
 
 	# --------------------------------------------------------------------------
 	# Aggregator Dashboard & Static Assets

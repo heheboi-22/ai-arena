@@ -50,6 +50,7 @@ Setiap agen model AI menjalankan dev server atau preview server-nya pada port be
 | 38 | `hy-4-workbuddy` | HY 4 (WorkBuddy) | **5138** | `npx serve -s -l 5138 dist` |
 | 39 | `claude-fable-5.2-claude` | Claude Fable 5.2 (Claude) | **5139** | `npx serve -s -l 5139 dist` |
 | 40 | `gemini-4-carbon-coarena` | Gemini 4 Carbon (CoArena) | **5140** | `npx serve -s -l 5140 dist` |
+| 41 | `gemini-4-hydrogen-antigraivty` | Gemini 4 Hydrogen (Antigravity) | **5141** | `npx serve -s -l 5141 dist` |
 
 > [!TIP]
 > **Formula Port**: `5100 + Nomor Urut Model`.
@@ -107,11 +108,11 @@ Pengganti `arena.sh` yang tidak butuh node, tmux, atau caddy di host. Semua
 model dibangun di dalam **satu** image (multi-stage: `npm ci` → `vite build`
 untuk tiap folder), lalu dijalankan di dalam **satu** container oleh supervisord:
 Caddy sebagai router di `:8080` plus satu static server (`busybox httpd`) per
-model di `127.0.0.1:5101-5140`, port yang sama dengan tabel di atas.
+model di `127.0.0.1:5101-5141`, port yang sama dengan tabel di atas.
 
 ```bash
 docker compose up -d --build             # bangun + jalankan
-docker compose exec arena supervisorctl status   # 41 proses: caddy + 40 static
+docker compose exec arena supervisorctl status   # 42 proses: caddy + 41 static
 docker compose logs -f arena             # log router + event supervisord
 docker compose down                      # hentikan
 ```
@@ -124,7 +125,7 @@ docker compose down                      # hentikan
   berubah, jadi mengubah satu model membangun ulang model itu saja, dan
   mengubah dashboard, dokumen, atau Caddyfile tidak membangun ulang model mana
   pun. Unduhan npm disimpan di cache mount BuildKit yang dipakai bersama oleh
-  40 model, jadi `npm ci` yang memang harus jalan pun cuma hitungan detik.
+  41 model, jadi `npm ci` yang memang harus jalan pun cuma hitungan detik.
 - Hanya `:8080` yang di-publish. Static server model bind ke loopback di dalam
   container dan hanya bisa dijangkau Caddy, jadi angka port di tabel atas
   berlaku di dua tempat: mode lokal (host) dan di dalam container.

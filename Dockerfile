@@ -364,6 +364,16 @@ RUN npm run build \
   && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
 
 
+# 5141  gemini-4-hydrogen-antigraivty  (Pocket World - floating island, time of day + weather)
+FROM ${NODE_IMAGE} AS m-gemini-4-hydrogen-antigraivty
+WORKDIR /src
+COPY gemini-4-hydrogen-antigraivty/package.json gemini-4-hydrogen-antigraivty/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY gemini-4-hydrogen-antigraivty/ ./
+RUN npm run build \
+  && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+
+
 # ==============================================================================
 # Stage: supervisord program per model, straight from models.json
 # ==============================================================================
@@ -423,6 +433,7 @@ COPY --from=m-muse-spark-1.3-muse /out /srv/models/muse-spark-1.3-muse
 COPY --from=m-hy-4-workbuddy /out /srv/models/hy-4-workbuddy
 COPY --from=m-claude-fable-5.2-claude /out /srv/models/claude-fable-5.2-claude
 COPY --from=m-gemini-4-carbon-coarena /out /srv/models/gemini-4-carbon-coarena
+COPY --from=m-gemini-4-hydrogen-antigraivty /out /srv/models/gemini-4-hydrogen-antigraivty
 
 # Installed at /etc/supervisord.conf on purpose: that is the first path
 # supervisorctl searches, so `supervisorctl status` inside the container works

@@ -1,10 +1,8 @@
 # MODELS.md - catatan model, effort, reasoning, harness, provider
 
-Satu baris per folder model di repo ini. Kolom `Effort` hampir seluruhnya
-terisi: repo ini tidak menyimpannya sama sekali, jadi nilainya berasal dari
-catatan sesi pemilik repo dan dari berkas harness di mesin ini (lihat bagian
-Sumber di bawah). Satu-satunya sel yang dibiarkan `?` adalah baris
-`gemini-4-carbon-coarena` (lihat bagian Selisih folder dan `models.json`). Effort
+Satu baris per folder model di repo ini. Kolom `Effort` terisi seluruhnya: repo ini
+tidak menyimpannya sama sekali, jadi nilainya berasal dari catatan sesi pemilik
+repo dan dari berkas harness di mesin ini (lihat bagian Sumber di bawah). Effort
 dan reasoning tidak dipisah jadi dua kolom karena keduanya setelan yang sama.
 
 Kolom `From` diambil dari field `tag` di `aggregator/models.json` kalau ada.
@@ -12,9 +10,9 @@ Kolom `Harness` dan `Provider` dibaca dari akhiran nama folder. Sebagian baris
 hanya bisa diketahui dari catatan sesi pemilik repo, bukan dari file di repo:
 effort tiap harness (lihat legenda di bawah tabel), harness baris CoreWeave,
 Freebuff, dan DSH, serta provider baris CoreWeave, Freebuff, WorkBuddy, CodeBuddy, Cline, dan OpenCode.
-
-Satu baris masih `?` di kolom harness, `mimo-v2.6-flash`, karena nama foldernya
-tidak menyebut harness sama sekali. Kolom provider sudah terisi semua.
+Satu pengecualian: `mimo-v2.6-flash`, karena nama foldernya tidak menyebut harness
+sama sekali — nilainya dibaca dari sesi di `opencode.db` (lihat bagian Sumber).
+Kolom harness dan provider sudah terisi semua.
 
 ## Tabel
 
@@ -31,13 +29,14 @@ tidak menyebut harness sama sekali. Kolom provider sudah terisi semua.
 | DeepSeek v4.1 Flash | DeepSeek | max | Freebuff | Freebuff | `deepseek-v4.1-flash-freebuff` |
 | DeepSeek v4.1 Flash 1017 | DeepSeek | max | DeepSeek Harness | DeepSeek | `deepseek-v4.1-flash-1017-dsh` |
 | DeepSeek v4.1 Flash 1017 | DeepSeek | default | OpenCode | CoreWeave | `deepseek-v4.1-flash-1017-coreweave` |
-| Fledge Alpha | Fledge | max | OpenCode | OpenCode | `fledge-alpha-opencode` |
+| Fledge Alpha | Inkling (Inkling 2 Small) | max | OpenCode | OpenCode | `fledge-alpha-opencode` |
 | Gemini 3.1 Pro | Google * | high | Google Antigravity | Google | `gemini-3.1-pro-antigraivty` |
 | Gemini 3.7 Flash | Google | high | Google Antigravity | Google | `gemini-3.7-flash` |
 | Gemini 3.8 Flash | Google | high | Google Antigravity | Google | `gemini-3.8-flash` |
 | Gemini 4 Argon | Google * | high | Google Antigravity | Google | `gemini-4-argon-antigravity` |
 | Gemini 4 Argon | Google * | xhigh | Cline | Cline | `gemini-4-argon-cline` |
-| Gemini 4 Carbon | Google | ? | CoArena | Coarena | `gemini-4-carbon-coarena` |
+| Gemini 4 Carbon | Google | high | OpenCode | Coarena | `gemini-4-carbon-coarena` |
+| Gemini 4 Hydrogen | Google | high | Google Antigravity | Google | `gemini-4-hydrogen-antigraivty` |
 | GLM 5.2 | Zhipu AI | default | OpenCode | CoreWeave | `glm-5.2-coreweave` |
 | GLM 5.3 | Zhipu AI * | max | ZCode | Z.ai | `glm-5.3-zcode` |
 | GLM 5.3 | Zhipu AI | max | CodeBuddy | CodeBuddy | `GLM-5.3-Codebuddy` |
@@ -54,12 +53,12 @@ tidak menyebut harness sama sekali. Kolom provider sudah terisi semua.
 | Kimi K3 | Moonshot AI | default | WorkBuddy | WorkBuddy | `kimi-k3-workbuddy` |
 | Ling 3.1 Flash | Ling | default | OpenCode | OpenCode | `ling-3.1-flash-opencode` |
 | LongCat 2.5 | LongCat | default | OpenCode | OpenCode | `longcat-2.5-opencode` |
-| MiMo v2.6 Flash | Xiaomi / MIMO | default | ? | Xiaomi | `mimo-v2.6-flash` |
+| MiMo v2.6 Flash | Xiaomi / MIMO | default | OpenCode | Xiaomi | `mimo-v2.6-flash` |
 | Muse Spark 1.3 | Muse / Spark | xhigh | OpenCode | OpenCode | `muse-spark-1.3-opencode` |
 | Muse Spark 1.3 | Meta | xhigh | Muse | Meta | `muse-spark-1.3-muse` |
 | Opus 5.5 | Anthropic | medium | Cursor | Anthropic | `opus-5.5-cursor` |
 | Pixel Canary | ? | default | Cline | Cline | `pixel-canary-cline` |
-| Space Bunny | ? | default | Cline | Cline | `space-bunny-cline` |
+| Space Bunny | MiniMax (pre-release-minimax-m3.1-flash) | default | Cline | Cline | `space-bunny-cline` |
 
 `TBD` = belum dicatat, isi manual. Satu nilai untuk effort sekaligus reasoning.
 Setelah seluruh baris terisi, tidak ada baris yang masih memakai nilai ini.
@@ -135,7 +134,10 @@ Di luar repo, beberapa berkas di mesin ini menyimpan datanya:
   tingkatan mana yang tertinggi.
 - `~/.local/share/opencode/opencode.db`, tabel `session_v2`: tiap sesi menyimpan
   `providerID`, `id`, dan `variant` yang dipakai. Sesi build arena ada di sini,
-  misalnya `fledge-alpha-free` variant `max` dan `ling-3.1-flash-free` tanpa variant.
+  misalnya `fledge-alpha-free` variant `max`, `ling-3.1-flash-free` tanpa variant,
+  dan `mimo-v2.6-flash-free` dengan `providerID: opencode` tanpa variant
+  (`Building Pocket World 3D diorama`, `/home/aorus/Project/testing`, 24 Sep 2026)
+  — itu yang mengisi kolom `Harness` baris MiMo.
 - `~/.local/state/opencode/model.json`: variant terakhir per model.
 - `~/.var/app/dev.zed.Zed/config/zed/settings.json`: `agent.default_model` berisi
   `{"provider":"zed.dev","model":"gpt-6-sol","enable_thinking":true,"effort":"xhigh"}`.
@@ -177,14 +179,13 @@ Tiga baris pertama yang membuat klaim "effort tidak terekam di mana pun" di vers
 awal catatan ini perlu diperbaiki: untuk harness opencode datanya ada, tinggal
 dibaca. Untuk harness lain, sebagian nilainya masih dari catatan sesi pemilik repo.
 
-Kolom Effort sekarang terisi di semua baris kecuali `gemini-4-carbon-coarena`
-(model Coarena yang tidak punya setelan effort tercatat). Sebelas di antaranya
-dari berkas di mesin ini, sisanya dari catatan sesi pemilik repo. Tidak ada lagi
-baris `TBD`.
+Kolom Effort sekarang terisi di semua baris. Sebelas di antaranya dari berkas di
+mesin ini, sisanya dari catatan sesi pemilik repo. Tidak ada lagi baris `TBD`
+maupun sel `?`.
 
 ## Selisih folder dan `models.json`
 
-45 folder model di repo (ditambah symlink `Gemini-4-Argon-Antigravity`), 40 terdaftar di `aggregator/models.json`. Lima folder
+46 folder model di repo (ditambah symlink `Gemini-4-Argon-Antigravity`), 41 terdaftar di `aggregator/models.json`. Lima folder
 belum punya entri konsol:
 
 - `gemini-3.1-pro-antigraivty`
@@ -213,13 +214,23 @@ lengkap (dikirim Arista Latif lewat WhatsApp) dan terdaftar di port 5136.
 port 5139 (di upstream tercatat 5132, digeser karena 5132-5138 sudah dipakai
 world lain di working tree mesin ini).
 `gemini-4-carbon-coarena` berisi source Pocket World lengkap dan terdaftar di port
-5140. Barisnya satu-satunya yang masih `?` di kolom `Effort` dan `Harness`:
-folder ini dibuat langsung di working tree lewat Coarena Model API, tanpa setelan
-effort dan tanpa harness CLI yang tercatat, jadi dua sel itu sengaja dibiarkan
-terbuka daripada diisi tebakan.
+5140. Harness-nya OpenCode, provider-nya Coarena (Coarena Model API); akhiran
+folder di baris ini menunjuk provider, bukan harness. Effort-nya `high` dari
+catatan pemilik repo.
+`gemini-4-hydrogen-antigraivty` berisi source Pocket World lengkap
+(Three.js + Vite + TypeScript, `tsc --noEmit` + `vite build` lolos) dan terdaftar
+di port 5141.
 
 Dua hal kecil yang ketemu waktu mencatat:
 
 - Nama folder `gemini-3.1-pro-antigraivty` salah ketik, seharusnya `antigravity`.
-- `tag` untuk `space-bunny-cline` di `models.json` isinya `Pocket World`, bukan
-  nama pembuat model, jadi kolom `From` baris itu diisi `?`.
+- `Fledge Alpha` adalah codename stealth untuk model `Inkling 2 Small`, jadi kolom
+  `From` baris itu diisi `Inkling (Inkling 2 Small)`, dan `tag` di `models.json`
+  diganti dari `Fledge` ke `Inkling`. Nama tampil world tetap `Fledge Alpha`
+  karena itu nama folder dan judul entri konsol.
+- `tag` untuk `space-bunny-cline` di `models.json` dulu berisi `Pocket World`
+  (judul brief), bukan nama pembuat; sudah diganti `MiniMax`. Model di baliknya
+  `pre-release-minimax-m3.1-flash`, jadi baris itu dibaca
+  `MiniMax (pre-release-minimax-m3.1-flash)`.
+- `pixel-canary-cline` tidak punya entri di `models.json`, jadi tidak ada `tag`
+  yang bisa dibaca; kolom `From` baris itu juga `?`.

@@ -149,7 +149,7 @@
     "port": 5117,
     "fallbackPort": null,
     "path": "/space-bunny-cline/",
-    "tag": "Pocket World",
+    "tag": "MiniMax",
     "color": "#7CC4A4"
   },
   {
@@ -202,7 +202,7 @@
     "port": 5123,
     "fallbackPort": null,
     "path": "/fledge-alpha-opencode/",
-    "tag": "Fledge",
+    "tag": "Inkling",
     "color": "#A3E635"
   },
   {
@@ -357,5 +357,14 @@
     "path": "/gemini-4-carbon-coarena/",
     "tag": "Google",
     "color": "#0F9D58"
+  },
+  {
+    "id": "gemini-4-hydrogen-antigraivty",
+    "name": "Gemini 4 Hydrogen (Antigravity)",
+    "port": 5141,
+    "fallbackPort": null,
+    "path": "/gemini-4-hydrogen-antigraivty/",
+    "tag": "Google",
+    "color": "#8E7CC3"
   }
 ]
