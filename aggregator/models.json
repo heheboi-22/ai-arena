@@ -366,5 +366,32 @@
     "path": "/gemini-4-hydrogen-antigraivty/",
     "tag": "Google",
     "color": "#8E7CC3"
+  },
+  {
+    "id": "gemini-4-hydrogen-web",
+    "name": "Gemini 4 Hydrogen (Web)",
+    "port": 5142,
+    "fallbackPort": null,
+    "path": "/gemini-4-hydrogen-web/",
+    "tag": "Google",
+    "color": "#4285F4"
+  },
+  {
+    "id": "gemini-4-argon-web",
+    "name": "Gemini 4 Argon (Web)",
+    "port": 5143,
+    "fallbackPort": null,
+    "path": "/gemini-4-argon-web/",
+    "tag": "Google",
+    "color": "#1967D2"
+  },
+  {
+    "id": "orchestrator-argon-antigravity",
+    "name": "Orchestrator (Argon) — Antigravity",
+    "port": 5144,
+    "fallbackPort": null,
+    "path": "/orchestrator-argon-antigravity/",
+    "tag": "Google",
+    "color": "#0B57D0"
   }
 ]

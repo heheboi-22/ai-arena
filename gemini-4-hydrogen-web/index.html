@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Pocket World</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%2714%27 fill=%27%23274436%27/%3E%3Cpath d=%27M7 17c3-4 15-4 18 0l-3 7c-3 2-9 2-12 0z%27 fill=%27%238C6B4F%27/%3E%3Cpath d=%27M6 17c4-3 16-3 20 0-4 2-16 2-20 0z%27 fill=%27%23729B63%27/%3E%3Cpath d=%27M17 11h5v4h-5z%27 fill=%27%23F4ECE0%27/%3E%3Cpath d=%27M16 11l3.5-3.5L23 11z%27 fill=%27%23C06546%27/%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <div id="canvas-mount" aria-label="Interactive 3D Pocket World diorama"></div>
+      <div id="hud-root"></div>
+      <div id="webgl-fallback" class="webgl-fallback" hidden>
+        <div class="webgl-fallback-card">
+          <h1>Pocket World</h1>
+          <p>
+            WebGL graphics could not be initialized in this browser environment.
+            Enable hardware acceleration or try a modern WebGL-capable browser to explore the 3D island.
+          </p>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Pocket World — Floating Island Diorama</title>
+    <meta name="description" content="An interactive 3D floating island diorama with dynamic 24-hour sky lighting, weather, wind physics, pond ripples, and cozy cottage lights." />
+    <meta property="og:title" content="Pocket World — Floating Island Diorama" />
+    <meta property="og:description" content="An interactive 3D floating island diorama with dynamic 24-hour sky lighting, weather, wind physics, pond ripples, and cozy cottage lights." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%2714%27 fill=%27%231c2e38%27/%3E%3Cpath d=%27M6 17c4-4 16-4 20 0l-4 8c-3 2-9 2-12 0z%27 fill=%27%237a5b43%27/%3E%3Cpath d=%27M5 17c5-3 17-3 22 0-5 2-17 2-22 0z%27 fill=%27%236ab054%27/%3E%3Cpath d=%27M13 11h6v5h-6z%27 fill=%27%23f5ead8%27/%3E%3Cpath d=%27M12 11l4-4 4 4z%27 fill=%27%23c85a3a%27/%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <div id="canvas-mount" data-testid="canvas-mount" aria-label="Interactive 3D Pocket World floating island diorama"></div>
+      <div id="hud-root"></div>
+      <div id="webgl-fallback" class="webgl-fallback" hidden>
+        <div class="webgl-fallback-card">
+          <h1>Pocket World</h1>
+          <p>
+            WebGL graphics could not be initialized in this browser environment.
+            Enable hardware acceleration or open this page in a WebGL-capable browser to explore the floating island diorama.
+          </p>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

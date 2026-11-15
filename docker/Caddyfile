@@ -8,7 +8,7 @@
 #     this same container, one per model on 127.0.0.1:<port>.
 #
 # Caddy is the only process here that is reachable from outside (it publishes
-# :8080). The 41 static servers listen on loopback only (127.0.0.1:5101-5141).
+# :8080). The 44 static servers listen on loopback only (127.0.0.1:5101-5144).
 #
 # Adding a model touches four places: ../Caddyfile, this file,
 # aggregator/models.json and PORT_RULES.md. The supervisord program and its port
@@ -21,7 +21,17 @@
 	# Vite build uses base './', so assets are relative: strip the prefix before
 	# handing the request to the model's static server.
 	handle_path /{args[0]}/* {
-		reverse_proxy 127.0.0.1:{args[1]}
+		reverse_proxy 127.0.0.1:{args[1]} {
+			# Busybox httpd never reads a request body, and it closes the socket
+			# right after writing the response. When Cloudflare forwards a
+			# chunked request body, the unread bytes are still queued, so the
+			# close turns into an RST that truncates the RESPONSE (classic
+			# symptom: one asset arrives at 49152/65536/98304 B and the page
+			# renders blank, worse on a Cloudflare cache MISS). Buffering the
+			# body here means the upstream always gets a body-less request with
+			# nothing left in its receive queue.
+			request_buffers 1MB
+		}
 	}
 }
 
@@ -70,6 +80,9 @@
 	import route_model claude-fable-5.2-claude 5139
 	import route_model gemini-4-carbon-coarena 5140
 	import route_model gemini-4-hydrogen-antigraivty 5141
+	import route_model gemini-4-hydrogen-web 5142
+	import route_model gemini-4-argon-web 5143
+	import route_model orchestrator-argon-antigravity 5144
 
 	# --------------------------------------------------------------------------
 	# Aggregator dashboard: ./aggregator is baked into the image at
@@ -99,3 +112,4 @@
 		respond "<h3>502 - Model Server Belum Aktif</h3><p>Server model ini belum siap di dalam container. Cek status di <a href='/'>Dashboard Utama</a>.</p><p><a href='/'>Kembali ke Dashboard Utama</a></p>" 502
 	}
 }
+

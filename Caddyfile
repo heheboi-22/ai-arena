@@ -10,6 +10,9 @@
 	handle_path /{args[0]}/* {
 		reverse_proxy 127.0.0.1:{args[1]} {
 			header_up Host localhost
+			# Lihat docker/Caddyfile: body di-buffer supaya httpd (yang tidak
+			# membaca body request) tidak mengirim RST yang memotong respons.
+			request_buffers 1MB
 		}
 	}
 }
@@ -59,23 +62,26 @@
 	import route_model claude-fable-5.2-claude 5139
 	import route_model gemini-4-carbon-coarena 5140
 	import route_model gemini-4-hydrogen-antigraivty 5141
+	import route_model gemini-4-hydrogen-web 5142
+	import route_model gemini-4-argon-web 5143
+	import route_model orchestrator-argon-antigravity 5144
 
 	# --------------------------------------------------------------------------
 	# Aggregator Dashboard & Static Assets
 	# --------------------------------------------------------------------------
 	handle /models.json {
-		root * /home/aorus/Project/testing/aggregator
+		root * [workspace]/testing/aggregator
 		file_server
 	}
 
 	handle /aggregator/* {
-		root * /home/aorus/Project/testing
+		root * [workspace]/testing
 		file_server
 	}
 
 	# Default root serves Aggregator UI
 	handle {
-		root * /home/aorus/Project/testing/aggregator
+		root * [workspace]/testing/aggregator
 		try_files {path} /index.html
 		file_server
 	}
@@ -87,3 +93,4 @@
 		respond "<h3>502 - Model Server Belum Aktif</h3><p>Server untuk model ini belum dijalankan atau port belum siap. Silakan cek status di <a href='/'>Dashboard Utama</a>.</p><p><a href='/'>Kembali ke Dashboard Utama</a></p>" 502
 	}
 }
+

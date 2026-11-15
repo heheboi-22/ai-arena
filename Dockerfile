@@ -1,5 +1,5 @@
 # ==============================================================================
-# AI Arena: one image, one container, 41 processes
+# AI Arena: one image, one container, 45 processes
 # ==============================================================================
 #   docker compose up -d --build     then open http://localhost:8080/
 #
@@ -373,6 +373,33 @@ COPY gemini-4-hydrogen-antigraivty/ ./
 RUN npm run build \
   && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
 
+# 5142  gemini-4-hydrogen-web  (Pocket World - procedural Three.js floating-island diorama)
+FROM ${NODE_IMAGE} AS m-gemini-4-hydrogen-web
+WORKDIR /src
+COPY gemini-4-hydrogen-web/package.json gemini-4-hydrogen-web/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY gemini-4-hydrogen-web/ ./
+RUN npm run build \
+  && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+
+# 5143  gemini-4-argon-web  (Pocket World - Three.js island diorama)
+FROM ${NODE_IMAGE} AS m-gemini-4-argon-web
+WORKDIR /src
+COPY gemini-4-argon-web/package.json gemini-4-argon-web/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY gemini-4-argon-web/ ./
+RUN npm run build \
+  && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+
+# 5144  orchestrator-argon-antigravity  (Pocket World - Argon orchestrating Antigravity)
+FROM ${NODE_IMAGE} AS m-orchestrator-argon-antigravity
+WORKDIR /src
+COPY orchestrator-argon-antigravity/package.json orchestrator-argon-antigravity/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY orchestrator-argon-antigravity/ ./
+RUN npm run build \
+  && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+
 
 # ==============================================================================
 # Stage: supervisord program per model, straight from models.json
@@ -434,6 +461,9 @@ COPY --from=m-hy-4-workbuddy /out /srv/models/hy-4-workbuddy
 COPY --from=m-claude-fable-5.2-claude /out /srv/models/claude-fable-5.2-claude
 COPY --from=m-gemini-4-carbon-coarena /out /srv/models/gemini-4-carbon-coarena
 COPY --from=m-gemini-4-hydrogen-antigraivty /out /srv/models/gemini-4-hydrogen-antigraivty
+COPY --from=m-gemini-4-hydrogen-web /out /srv/models/gemini-4-hydrogen-web
+COPY --from=m-gemini-4-argon-web /out /srv/models/gemini-4-argon-web
+COPY --from=m-orchestrator-argon-antigravity /out /srv/models/orchestrator-argon-antigravity
 
 # Installed at /etc/supervisord.conf on purpose: that is the first path
 # supervisorctl searches, so `supervisorctl status` inside the container works
@@ -451,3 +481,4 @@ COPY aggregator /srv/aggregator
 EXPOSE 8080
 
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]
+

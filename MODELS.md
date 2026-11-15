@@ -185,12 +185,11 @@ maupun sel `?`.
 
 ## Selisih folder dan `models.json`
 
-46 folder model di repo (ditambah symlink `Gemini-4-Argon-Antigravity`), 41 terdaftar di `aggregator/models.json`. Lima folder
+49 folder model di repo (ditambah symlink `Gemini-4-Argon-Antigravity`), 44 terdaftar di `aggregator/models.json`. Empat folder
 belum punya entri konsol:
 
 - `gemini-3.1-pro-antigraivty`
 - `gemini-4-argon-cline`
-- `gemini-4-argon-web`
 - `gpt-6-sol-zed`
 - `pixel-canary-cline`
 
@@ -198,6 +197,9 @@ belum punya entri konsol:
 terdaftar di port 5127.
 `gemini-4-argon-antigravity` sekarang sudah berisi source Pocket World lengkap dan
 terdaftar di port 5128.
+`gemini-4-hydrogen-antigraivty` terdaftar di port 5141, `gemini-4-hydrogen-web` di
+port 5142, dan `gemini-4-argon-web` di port 5143 (semua sudah di-build ke image).
+`orchestrator-argon-antigravity` (otak Argon, eksekusi Antigravity) terdaftar di port 5144.
 `GLM-5.3-Codebuddy` sekarang sudah berisi source Pocket World lengkap dan
 terdaftar di port 5129 (`glm-5.3-codebuddy`).
 `Kimi-K2.8-Codebuddy` sekarang sudah berisi source Pocket World lengkap dan
