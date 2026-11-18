@@ -400,6 +400,15 @@ COPY orchestrator-argon-antigravity/ ./
 RUN npm run build \
   && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
 
+# 5145  gpt-6.2-sol-codex  (Pocket World - Three.js floating island, day cycle + weather)
+FROM ${NODE_IMAGE} AS m-gpt-6.2-sol-codex
+WORKDIR /src
+COPY gpt-6.2-sol-codex/package.json gpt-6.2-sol-codex/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY gpt-6.2-sol-codex/ ./
+RUN npm run build \
+  && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+
 # 5146  gemini-4-neon-web  (Pocket World - Gemini 4 Neon)
 FROM ${NODE_IMAGE} AS m-gemini-4-neon-web
 WORKDIR /src
@@ -482,8 +491,7 @@ COPY --from=m-gemini-4-hydrogen-antigraivty /out /srv/models/gemini-4-hydrogen-a
 COPY --from=m-gemini-4-hydrogen-web /out /srv/models/gemini-4-hydrogen-web
 COPY --from=m-gemini-4-argon-web /out /srv/models/gemini-4-argon-web
 COPY --from=m-orchestrator-argon-antigravity /out /srv/models/orchestrator-argon-antigravity
-# 5145  gpt-6.2-sol-codex (prebuilt bundle, copied straight from the context)
-COPY gpt-6.2-sol-codex/ /srv/models/gpt-6.2-sol-codex/
+COPY --from=m-gpt-6.2-sol-codex /out /srv/models/gpt-6.2-sol-codex
 COPY --from=m-gemini-4-neon-web /out /srv/models/gemini-4-neon-web
 COPY --from=m-gemini-4-neon-antigravity /out /srv/models/gemini-4-neon-antigravity
 
