@@ -68,6 +68,7 @@
 	import route_model gpt-6.2-sol-codex 5145
 	import route_model gemini-4-neon-web 5146
 	import route_model gemini-4-neon-antigravity 5147
+	import route_model gpt-6.2-astra-codex 5148
 
 	# --------------------------------------------------------------------------
 	# Aggregator Dashboard & Static Assets

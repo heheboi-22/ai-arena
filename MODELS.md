@@ -48,6 +48,7 @@ Kolom harness dan provider sudah terisi semua.
 | GPT 6 Luna | OpenAI | xhigh | Codex CLI | OpenAI | `gpt-6-luna-codex` |
 | GPT 6 Sol | OpenAI * | xhigh | Zed | OpenAI | `gpt-6-sol-zed` |
 | GPT 6.1 Sol | OpenAI | xhigh | Codex CLI | OpenAI | `gpt-6.1-sol-codex` |
+| GPT 6.2 Astra | OpenAI | xhigh | Codex CLI | OpenAI | `gpt-6.2-astra-codex` |
 | Grok 4.7 | xAI | xhigh | Cursor | xAI | `grok-4.7-cursor` |
 | Kimi K2.8 | Moonshot AI | max | CodeBuddy | CodeBuddy | `Kimi-K2.8-Codebuddy` |
 | Kimi K3 | Moonshot AI | default | WorkBuddy | WorkBuddy | `kimi-k3-workbuddy` |

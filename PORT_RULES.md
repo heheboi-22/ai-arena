@@ -57,6 +57,7 @@ Setiap agen model AI menjalankan dev server atau preview server-nya pada port be
 | 45 | `gpt-6.2-sol-codex` | GPT 6.2 Sol (Codex) | **5145** | `npx serve -s -l 5145 dist` |
 | 46 | `gemini-4-neon-web` | Gemini 4 Neon (Web) | **5146** | `npx serve -s -l 5146 dist` |
 | 47 | `gemini-4-neon-antigravity` | Gemini 4 Neon (Antigravity) | **5147** | `npx serve -s -l 5147 dist` |
+| 48 | `gpt-6.2-astra-codex` | GPT 6.2 Astra (Codex) | **5148** | `npx serve -s -l 5148 dist` |
 
 > [!TIP]
 > **Formula Port**: `5100 + Nomor Urut Model`.

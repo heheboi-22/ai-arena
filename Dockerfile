@@ -427,6 +427,15 @@ COPY gemini-4-neon-antigravity/ ./
 RUN npm run build \
   && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
 
+# 5148  gpt-6.2-astra-codex  (Pocket World - Three.js floating island, Willowmere)
+FROM ${NODE_IMAGE} AS m-gpt-6.2-astra-codex
+WORKDIR /src
+COPY gpt-6.2-astra-codex/package.json gpt-6.2-astra-codex/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY gpt-6.2-astra-codex/ ./
+RUN npm run build \
+  && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+
 
 # ==============================================================================
 # Stage: the console (React + Astryx), built to plain static files
@@ -506,6 +515,7 @@ COPY --from=m-gemini-4-hydrogen-web /out /srv/models/gemini-4-hydrogen-web
 COPY --from=m-gemini-4-argon-web /out /srv/models/gemini-4-argon-web
 COPY --from=m-orchestrator-argon-antigravity /out /srv/models/orchestrator-argon-antigravity
 COPY --from=m-gpt-6.2-sol-codex /out /srv/models/gpt-6.2-sol-codex
+COPY --from=m-gpt-6.2-astra-codex /out /srv/models/gpt-6.2-astra-codex
 COPY --from=m-gemini-4-neon-web /out /srv/models/gemini-4-neon-web
 COPY --from=m-gemini-4-neon-antigravity /out /srv/models/gemini-4-neon-antigravity
 

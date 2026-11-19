@@ -387,7 +387,7 @@
   },
   {
     "id": "orchestrator-argon-antigravity",
-    "name": "Orchestrator (Argon) — Antigravity",
+    "name": "Orchestrator (Argon) \u2014 Antigravity",
     "port": 5144,
     "fallbackPort": null,
     "path": "/orchestrator-argon-antigravity/",
@@ -420,5 +420,14 @@
     "path": "/gemini-4-neon-antigravity/",
     "tag": "Google",
     "color": "#C5221F"
+  },
+  {
+    "id": "gpt-6.2-astra-codex",
+    "name": "GPT 6.2 Astra (Codex)",
+    "port": 5148,
+    "fallbackPort": null,
+    "path": "/gpt-6.2-astra-codex/",
+    "tag": "OpenAI",
+    "color": "#10A37F"
   }
 ]
