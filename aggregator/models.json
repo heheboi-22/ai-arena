@@ -6,7 +6,9 @@
     "fallbackPort": 4173,
     "path": "/gemini-3.7-flash/",
     "tag": "Google",
-    "color": "#4285F4"
+    "color": "#4285F4",
+    "effort": "high",
+    "harness": "Google Antigravity"
   },
   {
     "id": "gemini-3.8-flash",
@@ -15,7 +17,9 @@
     "fallbackPort": 5174,
     "path": "/gemini-3.8-flash/",
     "tag": "Google",
-    "color": "#34A853"
+    "color": "#34A853",
+    "effort": "high",
+    "harness": "Google Antigravity"
   },
   {
     "id": "deepseek-v4.1-flash-coreweave",
@@ -24,7 +28,9 @@
     "fallbackPort": 5175,
     "path": "/deepseek-v4.1-flash-coreweave/",
     "tag": "DeepSeek",
-    "color": "#4E6EF2"
+    "color": "#4E6EF2",
+    "effort": "default",
+    "harness": "OpenCode"
   },
   {
     "id": "deepseek-v4.1-flash-freebuff",
@@ -33,7 +39,9 @@
     "fallbackPort": null,
     "path": "/deepseek-v4.1-flash-freebuff/",
     "tag": "DeepSeek",
-    "color": "#00A4E4"
+    "color": "#00A4E4",
+    "effort": "max",
+    "harness": "Freebuff"
   },
   {
     "id": "deepseek-v4-flash-0731-coreweave",
@@ -42,7 +50,9 @@
     "fallbackPort": null,
     "path": "/deepseek-v4-flash-0731-coreweave/",
     "tag": "DeepSeek",
-    "color": "#7B93E8"
+    "color": "#7B93E8",
+    "effort": "default",
+    "harness": "OpenCode"
   },
   {
     "id": "glm-5.2-coreweave",
@@ -51,7 +61,9 @@
     "fallbackPort": 4174,
     "path": "/glm-5.2-coreweave/",
     "tag": "Zhipu AI",
-    "color": "#20B2AA"
+    "color": "#20B2AA",
+    "effort": "default",
+    "harness": "OpenCode"
   },
   {
     "id": "glm-5.3-flash-coreweave",
@@ -60,7 +72,9 @@
     "fallbackPort": 5210,
     "path": "/glm-5.3-flash-coreweave/",
     "tag": "Zhipu AI",
-    "color": "#008080"
+    "color": "#008080",
+    "effort": "default",
+    "harness": "OpenCode"
   },
   {
     "id": "glm-5.3-flash-freebuff",
@@ -69,7 +83,9 @@
     "fallbackPort": 5199,
     "path": "/glm-5.3-flash-freebuff/",
     "tag": "Zhipu AI",
-    "color": "#2E8B57"
+    "color": "#2E8B57",
+    "effort": "max",
+    "harness": "Freebuff"
   },
   {
     "id": "mimo-v2.6-flash",
@@ -78,7 +94,9 @@
     "fallbackPort": null,
     "path": "/mimo-v2.6-flash/",
     "tag": "Xiaomi / MIMO",
-    "color": "#FF6700"
+    "color": "#FF6700",
+    "effort": "default",
+    "harness": "OpenCode"
   },
   {
     "id": "muse-spark-1.3-opencode",
@@ -87,7 +105,9 @@
     "fallbackPort": 5173,
     "path": "/muse-spark-1.3-opencode/",
     "tag": "Muse / Spark",
-    "color": "#E91E63"
+    "color": "#E91E63",
+    "effort": "xhigh",
+    "harness": "OpenCode"
   },
   {
     "id": "claude-sonnet-4.6-antigravity",
@@ -96,7 +116,9 @@
     "fallbackPort": null,
     "path": "/claude-sonnet-4.6-antigravity/",
     "tag": "Anthropic",
-    "color": "#D97706"
+    "color": "#D97706",
+    "effort": "high",
+    "harness": "Google Antigravity"
   },
   {
     "id": "claude-opus-4.6-antigravity",
@@ -105,7 +127,9 @@
     "fallbackPort": null,
     "path": "/claude-opus-4.6-antigravity/",
     "tag": "Anthropic",
-    "color": "#8B5CF6"
+    "color": "#8B5CF6",
+    "effort": "default",
+    "harness": "Google Antigravity"
   },
   {
     "id": "gpt-6-luna-codex",
@@ -114,7 +138,9 @@
     "fallbackPort": null,
     "path": "/gpt-6-luna-codex/",
     "tag": "OpenAI",
-    "color": "#10A37F"
+    "color": "#10A37F",
+    "effort": "xhigh",
+    "harness": "Codex CLI"
   },
   {
     "id": "gpt-5.6-luna-codex",
@@ -123,7 +149,9 @@
     "fallbackPort": null,
     "path": "/gpt-5.6-luna-codex/",
     "tag": "OpenAI",
-    "color": "#10A37F"
+    "color": "#10A37F",
+    "effort": "xhigh",
+    "harness": "Codex CLI"
   },
   {
     "id": "opus-5.5-cursor",
@@ -132,7 +160,9 @@
     "fallbackPort": null,
     "path": "/opus-5.5-cursor/",
     "tag": "Anthropic",
-    "color": "#C084FC"
+    "color": "#C084FC",
+    "effort": "medium",
+    "harness": "Cursor"
   },
   {
     "id": "grok-4.7-cursor",
@@ -141,7 +171,9 @@
     "fallbackPort": null,
     "path": "/grok-4.7-cursor/",
     "tag": "xAI",
-    "color": "#E8E8E8"
+    "color": "#E8E8E8",
+    "effort": "xhigh",
+    "harness": "Cursor"
   },
   {
     "id": "space-bunny-cline",
@@ -150,7 +182,9 @@
     "fallbackPort": null,
     "path": "/space-bunny-cline/",
     "tag": "MiniMax",
-    "color": "#7CC4A4"
+    "color": "#7CC4A4",
+    "effort": "default",
+    "harness": "Cline"
   },
   {
     "id": "longcat-2.5-opencode",
@@ -158,7 +192,9 @@
     "port": 5118,
     "fallbackPort": null,
     "path": "/longcat-2.5-opencode/",
-    "tag": "LongCat"
+    "tag": "LongCat",
+    "effort": "default",
+    "harness": "OpenCode"
   },
   {
     "id": "gpt-6.1-sol-codex",
@@ -167,7 +203,9 @@
     "fallbackPort": null,
     "path": "/gpt-6.1-sol-codex/",
     "tag": "OpenAI",
-    "color": "#10A37F"
+    "color": "#10A37F",
+    "effort": "xhigh",
+    "harness": "Codex CLI"
   },
   {
     "id": "gpt-6-astra-codex",
@@ -176,7 +214,9 @@
     "fallbackPort": null,
     "path": "/gpt-6-astra-codex/",
     "tag": "OpenAI",
-    "color": "#10A37F"
+    "color": "#10A37F",
+    "effort": "xhigh",
+    "harness": "Codex CLI"
   },
   {
     "id": "glm-5.3-flash-zcode",
@@ -185,7 +225,9 @@
     "fallbackPort": null,
     "path": "/glm-5.3-flash-zcode/",
     "tag": "Zhipu AI",
-    "color": "#7C3AED"
+    "color": "#7C3AED",
+    "effort": "max",
+    "harness": "ZCode"
   },
   {
     "id": "ling-3.1-flash-opencode",
@@ -194,7 +236,9 @@
     "fallbackPort": null,
     "path": "/ling-3.1-flash-opencode/",
     "tag": "Ling",
-    "color": "#0EA5E9"
+    "color": "#0EA5E9",
+    "effort": "default",
+    "harness": "OpenCode"
   },
   {
     "id": "fledge-alpha-opencode",
@@ -203,7 +247,9 @@
     "fallbackPort": null,
     "path": "/fledge-alpha-opencode/",
     "tag": "Inkling",
-    "color": "#A3E635"
+    "color": "#A3E635",
+    "effort": "max",
+    "harness": "OpenCode"
   },
   {
     "id": "claude-haiku-5.5-claude",
@@ -212,7 +258,9 @@
     "fallbackPort": null,
     "path": "/claude-haiku-5.5-claude/",
     "tag": "Anthropic",
-    "color": "#EAB308"
+    "color": "#EAB308",
+    "effort": "xhigh",
+    "harness": "Claude Code"
   },
   {
     "id": "claude-sonnet-5.5-claude",
@@ -221,7 +269,9 @@
     "fallbackPort": null,
     "path": "/claude-sonnet-5.5-claude/",
     "tag": "Anthropic",
-    "color": "#F97316"
+    "color": "#F97316",
+    "effort": "xhigh",
+    "harness": "Claude Code"
   },
   {
     "id": "claude-opus-5.5-claude",
@@ -230,7 +280,9 @@
     "fallbackPort": null,
     "path": "/claude-opus-5.5-claude/",
     "tag": "Anthropic",
-    "color": "#9333EA"
+    "color": "#9333EA",
+    "effort": "xhigh",
+    "harness": "Claude Code"
   },
   {
     "id": "kimi-k3-workbuddy",
@@ -239,7 +291,9 @@
     "fallbackPort": null,
     "path": "/kimi-k3-workbuddy/",
     "tag": "Moonshot AI",
-    "color": "#06B6D4"
+    "color": "#06B6D4",
+    "effort": "default",
+    "harness": "WorkBuddy"
   },
   {
     "id": "gemini-4-argon-antigravity",
@@ -248,7 +302,9 @@
     "fallbackPort": null,
     "path": "/gemini-4-argon-antigravity/",
     "tag": "Google",
-    "color": "#1A73E8"
+    "color": "#1A73E8",
+    "effort": "high",
+    "harness": "Google Antigravity"
   },
   {
     "id": "glm-5.3-codebuddy",
@@ -257,7 +313,9 @@
     "fallbackPort": null,
     "path": "/glm-5.3-codebuddy/",
     "tag": "Zhipu AI",
-    "color": "#5B8DEF"
+    "color": "#5B8DEF",
+    "effort": "max",
+    "harness": "CodeBuddy"
   },
   {
     "id": "kimi-k2.8-codebuddy",
@@ -266,7 +324,9 @@
     "fallbackPort": null,
     "path": "/kimi-k2.8-codebuddy/",
     "tag": "Moonshot AI",
-    "color": "#0891B2"
+    "color": "#0891B2",
+    "effort": "max",
+    "harness": "CodeBuddy"
   },
   {
     "id": "deepseek-v4.1-flash-1017-dsh",
@@ -275,7 +335,9 @@
     "fallbackPort": null,
     "path": "/deepseek-v4.1-flash-1017-dsh/",
     "tag": "DeepSeek",
-    "color": "#2563EB"
+    "color": "#2563EB",
+    "effort": "max",
+    "harness": "DeepSeek Harness"
   },
   {
     "id": "glm-5.3-zcode",
@@ -284,7 +346,9 @@
     "fallbackPort": null,
     "path": "/glm-5.3-zcode/",
     "tag": "Zhipu AI",
-    "color": "#8B5CF6"
+    "color": "#8B5CF6",
+    "effort": "max",
+    "harness": "ZCode"
   },
   {
     "id": "kimi-k3.1-pro-workbuddy",
@@ -293,7 +357,9 @@
     "fallbackPort": null,
     "path": "/kimi-k3.1-pro-workbuddy/",
     "tag": "Moonshot AI",
-    "color": "#0891B2"
+    "color": "#0891B2",
+    "effort": "default",
+    "harness": "WorkBuddy"
   },
   {
     "id": "gpt-6.1-terra-codex",
@@ -302,7 +368,9 @@
     "fallbackPort": null,
     "path": "/gpt-6.1-terra-codex/",
     "tag": "OpenAI",
-    "color": "#3B8267"
+    "color": "#3B8267",
+    "effort": "xhigh",
+    "harness": "Codex CLI"
   },
   {
     "id": "hy3-workbuddy",
@@ -311,7 +379,9 @@
     "fallbackPort": null,
     "path": "/hy3-workbuddy/",
     "tag": "WorkBuddy",
-    "color": "#f4b860"
+    "color": "#f4b860",
+    "effort": "default",
+    "harness": "WorkBuddy"
   },
   {
     "id": "deepseek-v4.1-flash-1017-coreweave",
@@ -320,7 +390,9 @@
     "fallbackPort": null,
     "path": "/deepseek-v4.1-flash-1017-coreweave/",
     "tag": "DeepSeek",
-    "color": "#2563EB"
+    "color": "#2563EB",
+    "effort": "default",
+    "harness": "OpenCode"
   },
   {
     "id": "muse-spark-1.3-muse",
@@ -329,7 +401,9 @@
     "fallbackPort": null,
     "path": "/muse-spark-1.3-muse/",
     "tag": "Meta",
-    "color": "#E91E63"
+    "color": "#E91E63",
+    "effort": "xhigh",
+    "harness": "Muse"
   },
   {
     "id": "hy-4-workbuddy",
@@ -338,7 +412,9 @@
     "fallbackPort": null,
     "path": "/hy-4-workbuddy/",
     "tag": "Tencent",
-    "color": "#b7652e"
+    "color": "#b7652e",
+    "effort": "default",
+    "harness": "WorkBuddy"
   },
   {
     "id": "claude-fable-5.2-claude",
@@ -347,7 +423,9 @@
     "fallbackPort": null,
     "path": "/claude-fable-5.2-claude/",
     "tag": "Anthropic",
-    "color": "#D97757"
+    "color": "#D97757",
+    "effort": "medium",
+    "harness": "Claude Code"
   },
   {
     "id": "gemini-4-carbon-coarena",
@@ -356,7 +434,9 @@
     "fallbackPort": null,
     "path": "/gemini-4-carbon-coarena/",
     "tag": "Google",
-    "color": "#0F9D58"
+    "color": "#0F9D58",
+    "effort": "high",
+    "harness": "OpenCode"
   },
   {
     "id": "gemini-4-hydrogen-antigraivty",
@@ -365,7 +445,9 @@
     "fallbackPort": null,
     "path": "/gemini-4-hydrogen-antigraivty/",
     "tag": "Google",
-    "color": "#8E7CC3"
+    "color": "#8E7CC3",
+    "effort": "high",
+    "harness": "Google Antigravity"
   },
   {
     "id": "gemini-4-hydrogen-web",
@@ -374,7 +456,9 @@
     "fallbackPort": null,
     "path": "/gemini-4-hydrogen-web/",
     "tag": "Google",
-    "color": "#4285F4"
+    "color": "#4285F4",
+    "effort": "high",
+    "harness": "Web"
   },
   {
     "id": "gemini-4-argon-web",
@@ -383,16 +467,20 @@
     "fallbackPort": null,
     "path": "/gemini-4-argon-web/",
     "tag": "Google",
-    "color": "#1967D2"
+    "color": "#1967D2",
+    "effort": "high",
+    "harness": "Web"
   },
   {
     "id": "orchestrator-argon-antigravity",
-    "name": "Orchestrator (Argon) \u2014 Antigravity",
+    "name": "Orchestrator (Argon) — Antigravity",
     "port": 5144,
     "fallbackPort": null,
     "path": "/orchestrator-argon-antigravity/",
     "tag": "Google",
-    "color": "#0B57D0"
+    "color": "#0B57D0",
+    "effort": "high",
+    "harness": "Google Antigravity"
   },
   {
     "id": "gpt-6.2-sol-codex",
@@ -401,7 +489,9 @@
     "fallbackPort": null,
     "path": "/gpt-6.2-sol-codex/",
     "tag": "OpenAI",
-    "color": "#10A37F"
+    "color": "#10A37F",
+    "effort": "xhigh",
+    "harness": "Codex CLI"
   },
   {
     "id": "gemini-4-neon-web",
@@ -410,7 +500,9 @@
     "fallbackPort": null,
     "path": "/gemini-4-neon-web/",
     "tag": "Google",
-    "color": "#EA4335"
+    "color": "#EA4335",
+    "effort": "high",
+    "harness": "Web"
   },
   {
     "id": "gemini-4-neon-antigravity",
@@ -419,7 +511,9 @@
     "fallbackPort": null,
     "path": "/gemini-4-neon-antigravity/",
     "tag": "Google",
-    "color": "#C5221F"
+    "color": "#C5221F",
+    "effort": "high",
+    "harness": "Google Antigravity"
   },
   {
     "id": "gpt-6.2-astra-codex",
@@ -428,6 +522,8 @@
     "fallbackPort": null,
     "path": "/gpt-6.2-astra-codex/",
     "tag": "OpenAI",
-    "color": "#10A37F"
+    "color": "#10A37F",
+    "effort": "xhigh",
+    "harness": "Codex CLI"
   }
 ]

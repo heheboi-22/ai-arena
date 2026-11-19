@@ -133,7 +133,8 @@ export function IndexView({
             <span>№</span>
             <span>Model</span>
             <span className="cell--tag">Provider</span>
-            <span className="cell--route">Route</span>
+            <span className="cell--meta">Reasoning</span>
+            <span className="cell--meta">Harness</span>
             <span>Status</span>
             <span className="cell--acts">Actions</span>
           </li>
@@ -147,15 +148,8 @@ export function IndexView({
                   <span className="row__id mono">{model.id}</span>
                 </span>
                 <span className="row__tag cell--tag">{model.tag}</span>
-                <a
-                  className="row__route mono cell--route"
-                  href={model.path}
-                  target="_blank"
-                  rel="noopener"
-                  title={`Open ${model.name} in a new tab`}
-                >
-                  {model.path}
-                </a>
+                <span className="row__meta mono cell--meta">{model.effort ?? '—'}</span>
+                <span className="row__meta mono cell--meta">{model.harness ?? '—'}</span>
                 <StatusPill telemetry={telemetry[model.id]} />
                 <span className="row__acts cell--acts">
                   <Button

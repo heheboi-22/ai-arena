@@ -6,6 +6,10 @@ export interface Model {
   path: string;
   tag: string;
   color: string;
+  /** Reasoning effort dipakai saat world dibuat (dari MODELS.md). */
+  effort?: string;
+  /** Harness yang menjalankan model saat world dibuat (dari MODELS.md). */
+  harness?: string;
 }
 
 export interface Telemetry {

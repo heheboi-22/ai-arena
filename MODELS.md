@@ -49,6 +49,18 @@ Kolom harness dan provider sudah terisi semua.
 | GPT 6 Sol | OpenAI * | xhigh | Zed | OpenAI | `gpt-6-sol-zed` |
 | GPT 6.1 Sol | OpenAI | xhigh | Codex CLI | OpenAI | `gpt-6.1-sol-codex` |
 | GPT 6.2 Astra | OpenAI | xhigh | Codex CLI | OpenAI | `gpt-6.2-astra-codex` |
+| GLM 5.3 | Zhipu AI | max | CodeBuddy | CodeBuddy | `glm-5.3-codebuddy` |
+| Kimi K2.8 | Moonshot AI | max | CodeBuddy | CodeBuddy | `kimi-k2.8-codebuddy` |
+| Kimi K3.1 Pro | Moonshot AI | default | WorkBuddy | WorkBuddy | `kimi-k3.1-pro-workbuddy` |
+| GPT 6.1 Terra | OpenAI | xhigh | Codex CLI | OpenAI | `gpt-6.1-terra-codex` |
+| HY 3 | ? | default | WorkBuddy | WorkBuddy | `hy3-workbuddy` |
+| HY 4 | ? | default | WorkBuddy | WorkBuddy | `hy-4-workbuddy` |
+| Gemini 4 Hydrogen | Google | high | Web | Google | `gemini-4-hydrogen-web` |
+| Gemini 4 Argon | Google * | high | Web | Google | `gemini-4-argon-web` |
+| Orchestrator (Argon) | Google * | high | Google Antigravity | Google | `orchestrator-argon-antigravity` |
+| GPT 6.2 Sol | OpenAI | xhigh | Codex CLI | OpenAI | `gpt-6.2-sol-codex` |
+| Gemini 4 Neon | Google | high | Web | Google | `gemini-4-neon-web` |
+| Gemini 4 Neon | Google | high | Google Antigravity | Google | `gemini-4-neon-antigravity` |
 | Grok 4.7 | xAI | xhigh | Cursor | xAI | `grok-4.7-cursor` |
 | Kimi K2.8 | Moonshot AI | max | CodeBuddy | CodeBuddy | `Kimi-K2.8-Codebuddy` |
 | Kimi K3 | Moonshot AI | default | WorkBuddy | WorkBuddy | `kimi-k3-workbuddy` |
