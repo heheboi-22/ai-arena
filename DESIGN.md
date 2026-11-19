@@ -160,6 +160,9 @@ Button, Badge, StatusDot). What changes for the sections above:
   is a link.
 - **No footer chrome**: shortcut hints live in tooltips and the README, not in a
   permanent bar under the content.
+- **Index chrome**: no page heading, no status filter, no result counter. The
+  search field and the provider selector are the only filters; the roster itself
+  is the answer.
 
 The token table in §4 and the type table in §5 keep their intent; the shipped
 values now live in `aggregator/src/theme.ts` and `aggregator/src/console.css`.

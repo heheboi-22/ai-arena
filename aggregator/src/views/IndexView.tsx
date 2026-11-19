@@ -1,5 +1,4 @@
 import { Button } from '@astryxdesign/core/Button';
-import { SegmentedControl, SegmentedControlItem } from '@astryxdesign/core/SegmentedControl';
 import { Selector } from '@astryxdesign/core/Selector';
 import { Text } from '@astryxdesign/core/Text';
 import { TextInput } from '@astryxdesign/core/TextInput';
@@ -30,10 +29,7 @@ export function IndexView({
 }: IndexViewProps) {
   const query = filters.q.trim().toLowerCase();
   const rows = models.filter((model) => {
-    const t = telemetry[model.id];
     if (filters.tag !== 'ALL' && model.tag !== filters.tag) return false;
-    if (filters.status === 'UP' && !t?.up) return false;
-    if (filters.status === 'DOWN' && t?.up) return false;
     if (!query) return true;
     return [model.name, model.id, model.tag, String(model.port)].some((field) =>
       String(field).toLowerCase().includes(query),
@@ -45,19 +41,8 @@ export function IndexView({
     { value: 'ALL', label: 'All providers' },
     ...tags.map((tag) => ({ value: tag, label: tag })),
   ];
-  const hasFilter = query !== '' || filters.tag !== 'ALL' || filters.status !== 'ALL';
-
   return (
-    <section className="view" aria-labelledby="index-title">
-      <header className="view__head">
-        <Text as="h2" size="3xl" weight="normal" className="display">
-          <span id="index-title">Index</span>
-        </Text>
-        <Text size="sm" color="secondary">
-          Every model folder behind this Caddy route, with its live status.
-        </Text>
-      </header>
-
+    <section className="view" aria-label="Index">
       <div className="toolbar">
         <div className="toolbar__search">
           <TextInput
@@ -83,30 +68,6 @@ export function IndexView({
           />
         </div>
 
-        <SegmentedControl
-          label="Status"
-          value={filters.status}
-          onChange={(value: string) =>
-            onFilters({ ...filters, status: value as Filters['status'] })
-          }
-          size="sm"
-        >
-          <SegmentedControlItem value="ALL" label="Any" />
-          <SegmentedControlItem value="UP" label="Up" />
-          <SegmentedControlItem value="DOWN" label="Down" />
-        </SegmentedControl>
-
-        <Button
-          label="Clear filters"
-          size="sm"
-          variant="ghost"
-          isDisabled={!hasFilter}
-          onClick={() => onFilters({ q: '', tag: 'ALL', status: 'ALL' })}
-        />
-
-        <Text size="2xs" color="secondary" className="toolbar__count">
-          {load === 'ready' && models.length > 0 ? `${rows.length} of ${models.length} shown` : ''}
-        </Text>
       </div>
 
       {load === 'loading' ? (
@@ -160,7 +121,7 @@ export function IndexView({
             <Button
               label="Clear filters"
               size="sm"
-              onClick={() => onFilters({ q: '', tag: 'ALL', status: 'ALL' })}
+              onClick={() => onFilters({ q: '', tag: 'ALL' })}
             />
           }
         />

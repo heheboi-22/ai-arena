@@ -65,7 +65,7 @@ export function App() {
   const [loadError, setLoadError] = useState('');
   const [telemetry, setTelemetry] = useState<Record<string, Telemetry>>({});
   const [view, setView] = useState<View>(initialLocation.view);
-  const [filters, setFilters] = useState<Filters>({ q: '', tag: 'ALL', status: 'ALL' });
+  const [filters, setFilters] = useState<Filters>({ q: '', tag: 'ALL' });
   const [width, setWidth] = useState<FrameWidth>(initialLocation.width);
   const [mode, setMode] = useState<'light' | 'dark'>(readMode);
   const [toast, setToast] = useState<string | null>(null);
@@ -182,7 +182,7 @@ export function App() {
       if (isTyping(event)) {
         if (event.key === 'Escape') {
           (event.target as HTMLElement).blur();
-          setFilters({ q: '', tag: 'ALL', status: 'ALL' });
+          setFilters({ q: '', tag: 'ALL' });
         }
         return;
       }
@@ -202,7 +202,7 @@ export function App() {
       } else if (event.key === 'r' || event.key === 'R') {
         void recheck();
       } else if (event.key === 'Escape') {
-        setFilters({ q: '', tag: 'ALL', status: 'ALL' });
+        setFilters({ q: '', tag: 'ALL' });
       }
     };
     window.addEventListener('keydown', onKeyDown);

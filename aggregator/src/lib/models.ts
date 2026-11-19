@@ -18,7 +18,6 @@ export type LoadState = "loading" | "ready" | "error";
 export interface Filters {
   q: string;
   tag: string;
-  status: "ALL" | "UP" | "DOWN";
 }
 
 export type FrameWidth = "desktop" | "tablet" | "mobile";

@@ -161,7 +161,6 @@ main {
 
 .toolbar__search { flex: 0 1 26rem; min-width: 180px; }
 .toolbar__provider { flex: 0 1 180px; min-width: 150px; }
-.toolbar__count { margin-left: auto; }
 
 /* Roster ------------------------------------------------------------------ */
 
