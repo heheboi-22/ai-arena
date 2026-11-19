@@ -88,9 +88,9 @@
 	import route_model gemini-4-neon-antigravity 5147
 
 	# --------------------------------------------------------------------------
-	# Aggregator dashboard: ./aggregator is baked into the image at
-	# /srv/aggregator (and mounted read-only over it in docker-compose.yml, so
-	# the console can be edited without a rebuild).
+	# Aggregator dashboard: aggregator/ is built in its own image stage and the
+	# output lands at /srv/aggregator. docker-compose.yml mounts aggregator/dist
+	# over it, so a local build refreshes the console without a rebuild.
 	# --------------------------------------------------------------------------
 	handle /models.json {
 		root * /srv/aggregator

@@ -429,6 +429,20 @@ RUN npm run build \
 
 
 # ==============================================================================
+# Stage: the console (React + Astryx), built to plain static files
+# ==============================================================================
+# models.json stays at aggregator/models.json (the conf stage and arena.sh read
+# it there); the build copies it next to index.html so Caddy serves /models.json.
+FROM ${NODE_IMAGE} AS m-aggregator
+WORKDIR /src
+COPY aggregator/package.json aggregator/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY aggregator/ ./
+RUN npm run build \
+  && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+
+
+# ==============================================================================
 # Stage: supervisord program per model, straight from models.json
 # ==============================================================================
 FROM ${NODE_IMAGE} AS conf
@@ -502,10 +516,9 @@ COPY --from=m-gemini-4-neon-antigravity /out /srv/models/gemini-4-neon-antigravi
 COPY docker/supervisord.conf /etc/supervisord.conf
 COPY docker/Caddyfile /etc/caddy/Caddyfile
 
-# Also mounted over /srv/aggregator by docker-compose.yml during development, so
-# dashboard edits show up on refresh with no rebuild. Copied last: it changes
-# most often and nothing depends on it.
-COPY aggregator /srv/aggregator
+# The console's built output. docker-compose.yml mounts aggregator/dist over it
+# during development, so `npm run build` in aggregator/ is enough to refresh.
+COPY --from=m-aggregator /out /srv/aggregator
 
 # The only port that leaves the container (compose publishes 8080 -> 8080).
 EXPOSE 8080

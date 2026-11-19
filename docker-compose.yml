@@ -23,9 +23,9 @@ services:
     ports:
       - "${ARENA_PORT:-8080}:8080"
     volumes:
-      # Optional, for dashboard work: edit aggregator/ and refresh instead of
-      # rebuilding. The 47 model builds are baked into the image.
-      - ./aggregator:/srv/aggregator:ro
+      # Optional, for console work: `npm run build` in aggregator/ and refresh
+      # instead of rebuilding the image. The 47 model builds are baked in.
+      - ./aggregator/dist:/srv/aggregator:ro
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/"]
       interval: 30s

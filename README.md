@@ -33,10 +33,11 @@ been built yet.
 
 ## What is where
 
-`aggregator/` is the console. It reads `models.json`, sends a real request to
-every route, and shows which worlds answer. `DESIGN.md` records why it looks the
-way it does, including the measured contrast ratio of every text pairing in both
-themes.
+`aggregator/` is the console: a small Vite + React app styled with Astryx. It
+reads `models.json`, sends a real request to every route, and shows which worlds
+answer. Work on it with `npm run dev` inside `aggregator/`; `npm run build`
+writes `dist/`, which is what the image ships. The view, the chosen models and
+the preview width live in the query string, so any comparison can be linked.
 
 `Caddyfile` and `docker/Caddyfile` hold the routing. The first one is for a
 Caddy running on your machine, the second for the container, where the upstreams

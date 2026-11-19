@@ -133,8 +133,33 @@ never a lightened ink.
 
 ## 8. What this console deliberately does not do
 
-No emoji, no em dashes, no arrows on buttons, no decorative capsule badges (the
-single pill in the UI is the live counter, and it carries a number), no stat
-cards, no charts, no fake "fallback port" column (Caddy has no fallback logic and
-nothing reads that field, so showing it claimed a capability that does not
-exist), no trend-stacking, no pulsing status dots, no grid/dot backgrounds.
+No emoji, no em dashes, no arrows on buttons, no decorative capsule badges, no
+stat cards, no charts, no fake "fallback port" column (Caddy has no fallback
+logic and nothing reads that field, so showing it claimed a capability that does
+not exist), no latency numbers (a probe time is not a fact about the build),
+no trend-stacking, no pulsing status dots, no grid/dot backgrounds.
+
+## 9. Revision 2026-11-19: Astryx controls, React shell
+
+The console is no longer hand-written DOM. `aggregator/` is a Vite + React app
+and every control is an Astryx component (TextInput, Selector, SegmentedControl,
+Button, Badge, StatusDot). What changes for the sections above:
+
+- **Type (§5)**: Newsreader for display, Geist for UI, Geist Mono for routes,
+  ports and latency. Same three roles, one size scale, still no fourth family.
+- **Palette (§4)**: the paper, ink and crimson values moved into an Astryx theme
+  (`aggregator/src/theme.ts`) as light/dark token pairs, so both modes are
+  produced by one definition instead of two CSS blocks.
+- **Shape (§6)**: controls take Astryx radii; the roster and the frame gutters
+  stay square, one hairline (`1px`) between panes.
+- **Layout**: the frame views remain full bleed, edge to edge, with no page
+  padding and no toolbar above them. Each pane carries its own model selector
+  and its reload / open icons in a 36 px header, so the rest is iframe.
+- **State**: the view (`index`, `duo`, `quad`), the chosen models (`a`, `b`,
+  `q1`-`q4`) and the preview width (`w`) live in the query string. A comparison
+  is a link.
+- **No footer chrome**: shortcut hints live in tooltips and the README, not in a
+  permanent bar under the content.
+
+The token table in §4 and the type table in §5 keep their intent; the shipped
+values now live in `aggregator/src/theme.ts` and `aggregator/src/console.css`.
