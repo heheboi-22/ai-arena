@@ -1,5 +1,5 @@
 # ==============================================================================
-# AI Arena: one image, one container, 47 processes
+# AI Arena: one image, one container, 48 processes
 # ==============================================================================
 #   docker compose up -d --build     then open http://localhost:8080/
 #
@@ -409,6 +409,15 @@ COPY gemini-4-neon-web/ ./
 RUN npm run build \
   && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
 
+# 5147  gemini-4-neon-antigravity  (Pocket World - Gemini 4 Neon, Antigravity take)
+FROM ${NODE_IMAGE} AS m-gemini-4-neon-antigravity
+WORKDIR /src
+COPY gemini-4-neon-antigravity/package.json gemini-4-neon-antigravity/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY gemini-4-neon-antigravity/ ./
+RUN npm run build \
+  && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+
 
 # ==============================================================================
 # Stage: supervisord program per model, straight from models.json
@@ -476,6 +485,7 @@ COPY --from=m-orchestrator-argon-antigravity /out /srv/models/orchestrator-argon
 # 5145  gpt-6.2-sol-codex (prebuilt bundle, copied straight from the context)
 COPY gpt-6.2-sol-codex/ /srv/models/gpt-6.2-sol-codex/
 COPY --from=m-gemini-4-neon-web /out /srv/models/gemini-4-neon-web
+COPY --from=m-gemini-4-neon-antigravity /out /srv/models/gemini-4-neon-antigravity
 
 # Installed at /etc/supervisord.conf on purpose: that is the first path
 # supervisorctl searches, so `supervisorctl status` inside the container works

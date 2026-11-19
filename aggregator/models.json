@@ -411,5 +411,14 @@
     "path": "/gemini-4-neon-web/",
     "tag": "Google",
     "color": "#EA4335"
+  },
+  {
+    "id": "gemini-4-neon-antigravity",
+    "name": "Gemini 4 Neon (Antigravity)",
+    "port": 5147,
+    "fallbackPort": null,
+    "path": "/gemini-4-neon-antigravity/",
+    "tag": "Google",
+    "color": "#C5221F"
   }
 ]
