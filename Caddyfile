@@ -65,6 +65,8 @@
 	import route_model gemini-4-hydrogen-web 5142
 	import route_model gemini-4-argon-web 5143
 	import route_model orchestrator-argon-antigravity 5144
+	import route_model gpt-6.2-sol-codex 5145
+	import route_model gemini-4-neon-web 5146
 
 	# --------------------------------------------------------------------------
 	# Aggregator Dashboard & Static Assets

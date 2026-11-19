@@ -1,6 +1,6 @@
 # AI Arena
 
-One brief, forty-four models, forty-four takes.
+One brief, forty-six models, forty-six takes.
 
 `prompt.txt` asks for "Pocket World": an interactive Three.js diorama of a
 floating island, built from code, with no downloaded models, textures, HDRIs or
@@ -17,7 +17,7 @@ With Docker, which needs nothing else on the machine:
     docker compose up -d --build
     open http://localhost:8080/
 
-The image builds all forty-four worlds and runs them in a single container. Caddy
+The image builds all forty-six worlds and runs them in a single container. Caddy
 routes `/<folder>/` to its own static server per world, and only port 8080
 leaves the container. Stopping it again:
 

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A tiny floating island with a whole day of weather to explore.">
+    <meta name="theme-color" content="#f4eedf">
+    <title>Pocket World</title>
+    <script type="module" crossorigin src="./assets/index-BdKgTwaF.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Ca3sO4jH.css">
+  </head>
+  <body>
+    <main class="app">
+      <section class="stage" aria-labelledby="title">
+        <div class="sky" aria-hidden="true"></div>
+        <div class="stars" aria-hidden="true"></div>
+        <div class="viewport" id="viewport"></div>
+        <header class="intro">
+          <h1 id="title">Pocket <span>World</span></h1>
+          <p>Drag to orbit. Scroll or pinch to zoom.<br> Tap the cottage to light it.</p>
+        </header>
+        <p id="fallback" class="fallback" role="status" hidden>Pocket World needs WebGL 2. Try reopening it in a browser with hardware acceleration enabled.</p>
+      </section>
+      <section id="controls" class="controls" aria-label="Island controls">
+        <div class="control">
+          <div class="control-heading"><label for="time">Time of day</label><output id="time-value" for="time">16:00</output></div>
+          <input id="time" type="range" min="0" max="1440" step="15" value="960">
+        </div>
+        <div class="control">
+          <div class="control-heading" id="weather-label">Weather</div>
+          <div class="weather" role="group" aria-labelledby="weather-label">
+            <button type="button" id="clear" aria-pressed="true">Clear</button>
+            <button type="button" id="rain" aria-pressed="false">Rain</button>
+          </div>
+        </div>
+        <div class="control">
+          <div class="control-heading"><label for="wind">Wind</label><output id="wind-value" for="wind">30%</output></div>
+          <input id="wind" type="range" min="0" max="100" value="30">
+        </div>
+        <div class="control">
+          <div class="control-heading" id="lights-label">House lights</div>
+          <button type="button" id="lights" class="lights" aria-pressed="false" aria-labelledby="lights-label lights-state">
+            <i aria-hidden="true"></i><span id="lights-state">Off</span>
+          </button>
+        </div>
+        <button type="button" id="reset" class="reset">Reset view</button>
+      </section>
+    </main>
+  </body>
+</html>

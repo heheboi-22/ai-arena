@@ -393,5 +393,23 @@
     "path": "/orchestrator-argon-antigravity/",
     "tag": "Google",
     "color": "#0B57D0"
+  },
+  {
+    "id": "gpt-6.2-sol-codex",
+    "name": "GPT 6.2 Sol (Codex)",
+    "port": 5145,
+    "fallbackPort": null,
+    "path": "/gpt-6.2-sol-codex/",
+    "tag": "OpenAI",
+    "color": "#10A37F"
+  },
+  {
+    "id": "gemini-4-neon-web",
+    "name": "Gemini 4 Neon (Web)",
+    "port": 5146,
+    "fallbackPort": null,
+    "path": "/gemini-4-neon-web/",
+    "tag": "Google",
+    "color": "#EA4335"
   }
 ]

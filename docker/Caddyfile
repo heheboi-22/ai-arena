@@ -8,7 +8,7 @@
 #     this same container, one per model on 127.0.0.1:<port>.
 #
 # Caddy is the only process here that is reachable from outside (it publishes
-# :8080). The 44 static servers listen on loopback only (127.0.0.1:5101-5144).
+# :8080). The 46 static servers listen on loopback only (127.0.0.1:5101-5146).
 #
 # Adding a model touches four places: ../Caddyfile, this file,
 # aggregator/models.json and PORT_RULES.md. The supervisord program and its port
@@ -83,6 +83,8 @@
 	import route_model gemini-4-hydrogen-web 5142
 	import route_model gemini-4-argon-web 5143
 	import route_model orchestrator-argon-antigravity 5144
+	import route_model gpt-6.2-sol-codex 5145
+	import route_model gemini-4-neon-web 5146
 
 	# --------------------------------------------------------------------------
 	# Aggregator dashboard: ./aggregator is baked into the image at
