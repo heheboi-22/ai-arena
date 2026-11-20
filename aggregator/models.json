@@ -534,7 +534,7 @@
     "path": "/hy4-flash-workbuddy/",
     "tag": "Tencent",
     "color": "#0052D9",
-    "effort": "default",
+    "effort": "high",
     "harness": "WorkBuddy"
   }
 ]

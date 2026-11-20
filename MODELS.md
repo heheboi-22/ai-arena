@@ -55,7 +55,7 @@ Kolom harness dan provider sudah terisi semua.
 | GPT 6.1 Terra | OpenAI | xhigh | Codex CLI | OpenAI | `gpt-6.1-terra-codex` |
 | HY 3 | ? | default | WorkBuddy | WorkBuddy | `hy3-workbuddy` |
 | HY 4 | ? | default | WorkBuddy | WorkBuddy | `hy-4-workbuddy` |
-| HY 4 Flash | ? | default | WorkBuddy | WorkBuddy | `hy4-flash-workbuddy` |
+| HY 4 Flash | ? | high | WorkBuddy | WorkBuddy | `hy4-flash-workbuddy` |
 | Gemini 4 Hydrogen | Google | high | Web | Google | `gemini-4-hydrogen-web` |
 | Gemini 4 Argon | Google * | high | Web | Google | `gemini-4-argon-web` |
 | Orchestrator (Argon) | Google * | high | Google Antigravity | Google | `orchestrator-argon-antigravity` |
