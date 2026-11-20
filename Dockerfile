@@ -1,5 +1,5 @@
 # ==============================================================================
-# AI Arena: one image, one container, 48 processes
+# AI Arena: one image, one container, 49 processes
 # ==============================================================================
 #   docker compose up -d --build     then open http://localhost:8080/
 #
@@ -436,6 +436,18 @@ COPY gpt-6.2-astra-codex/ ./
 RUN npm run build \
   && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
 
+# 5149  hy4-flash-workbuddy  (Pocket World - procedural floating-island diorama)
+FROM ${NODE_IMAGE} AS m-hy4-flash-workbuddy
+WORKDIR /src
+COPY hy4-flash-workbuddy/package.json hy4-flash-workbuddy/package-lock.json ./
+# puppeteer-core is dev-only (verify.mjs uses a system Chromium); no download
+# happens during npm ci, but the flag keeps the build deterministic anyway.
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline --no-audit --no-fund
+COPY hy4-flash-workbuddy/ ./
+RUN npm run build \
+  && rm -rf /out && mkdir -p /out && cp -a dist/. /out/
+
 
 # ==============================================================================
 # Stage: the console (React + Astryx), built to plain static files
@@ -518,6 +530,7 @@ COPY --from=m-gpt-6.2-sol-codex /out /srv/models/gpt-6.2-sol-codex
 COPY --from=m-gpt-6.2-astra-codex /out /srv/models/gpt-6.2-astra-codex
 COPY --from=m-gemini-4-neon-web /out /srv/models/gemini-4-neon-web
 COPY --from=m-gemini-4-neon-antigravity /out /srv/models/gemini-4-neon-antigravity
+COPY --from=m-hy4-flash-workbuddy /out /srv/models/hy4-flash-workbuddy
 
 # Installed at /etc/supervisord.conf on purpose: that is the first path
 # supervisorctl searches, so `supervisorctl status` inside the container works

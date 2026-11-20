@@ -55,6 +55,7 @@ Kolom harness dan provider sudah terisi semua.
 | GPT 6.1 Terra | OpenAI | xhigh | Codex CLI | OpenAI | `gpt-6.1-terra-codex` |
 | HY 3 | ? | default | WorkBuddy | WorkBuddy | `hy3-workbuddy` |
 | HY 4 | ? | default | WorkBuddy | WorkBuddy | `hy-4-workbuddy` |
+| HY 4 Flash | ? | default | WorkBuddy | WorkBuddy | `hy4-flash-workbuddy` |
 | Gemini 4 Hydrogen | Google | high | Web | Google | `gemini-4-hydrogen-web` |
 | Gemini 4 Argon | Google * | high | Web | Google | `gemini-4-argon-web` |
 | Orchestrator (Argon) | Google * | high | Google Antigravity | Google | `orchestrator-argon-antigravity` |
@@ -225,6 +226,9 @@ terdaftar di port 5132.
 lengkap (dikirim Arista Latif lewat WhatsApp) dan terdaftar di port 5136.
 `hy-4-workbuddy` berisi source Pocket World lengkap (Three.js + Vite + TypeScript,
 36/36 pemeriksaan headless Chromium lolos) dan terdaftar di port 5138.
+`hy4-flash-workbuddy` berisi source Pocket World lengkap (Three.js + Vite +
+TypeScript, `tsc --noEmit` + `vite build` lolos, 18/18 pemeriksaan headless
+Chromium) dan terdaftar di port 5149.
 `claude-fable-5.2-claude` berisi source Pocket World lengkap dan terdaftar di
 port 5139 (di upstream tercatat 5132, digeser karena 5132-5138 sudah dipakai
 world lain di working tree mesin ini).

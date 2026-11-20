@@ -1,0 +1,23 @@
+{
+  "name": "pocket-world-hy4-flash",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Pocket World — a procedural, interactive 3D floating-island diorama built with Three.js, Vite and TypeScript.",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "verify": "node verify.mjs"
+  },
+  "dependencies": {
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.187.0",
+    "puppeteer-core": "^24.22.0",
+    "typescript": "^5.9.2",
+    "vite": "^8.3.0"
+  }
+}

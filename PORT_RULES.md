@@ -58,6 +58,7 @@ Setiap agen model AI menjalankan dev server atau preview server-nya pada port be
 | 46 | `gemini-4-neon-web` | Gemini 4 Neon (Web) | **5146** | `npx serve -s -l 5146 dist` |
 | 47 | `gemini-4-neon-antigravity` | Gemini 4 Neon (Antigravity) | **5147** | `npx serve -s -l 5147 dist` |
 | 48 | `gpt-6.2-astra-codex` | GPT 6.2 Astra (Codex) | **5148** | `npx serve -s -l 5148 dist` |
+| 49 | `hy4-flash-workbuddy` | HY 4 Flash (WorkBuddy) | **5149** | `npx serve -s -l 5149 dist` |
 
 > [!TIP]
 > **Formula Port**: `5100 + Nomor Urut Model`.
@@ -115,11 +116,11 @@ Pengganti `arena.sh` yang tidak butuh node, tmux, atau caddy di host. Semua
 model dibangun di dalam **satu** image (multi-stage: `npm ci` → `vite build`
 untuk tiap folder), lalu dijalankan di dalam **satu** container oleh supervisord:
 Caddy sebagai router di `:8080` plus satu static server (`busybox httpd`) per
-model di `127.0.0.1:5101-5147`, port yang sama dengan tabel di atas.
+model di `127.0.0.1:5101-5149`, port yang sama dengan tabel di atas.
 
 ```bash
 docker compose up -d --build             # bangun + jalankan
-docker compose exec arena supervisorctl status   # 48 proses: caddy + 47 static
+docker compose exec arena supervisorctl status   # 49 proses: caddy + 48 static
 docker compose logs -f arena             # log router + event supervisord
 docker compose down                      # hentikan
 ```
@@ -132,7 +133,7 @@ docker compose down                      # hentikan
   berubah, jadi mengubah satu model membangun ulang model itu saja, dan
   mengubah dashboard, dokumen, atau Caddyfile tidak membangun ulang model mana
   pun. Unduhan npm disimpan di cache mount BuildKit yang dipakai bersama oleh
-  47 model, jadi `npm ci` yang memang harus jalan pun cuma hitungan detik.
+  48 model, jadi `npm ci` yang memang harus jalan pun cuma hitungan detik.
 - Hanya `:8080` yang di-publish. Static server model bind ke loopback di dalam
   container dan hanya bisa dijangkau Caddy, jadi angka port di tabel atas
   berlaku di dua tempat: mode lokal (host) dan di dalam container.

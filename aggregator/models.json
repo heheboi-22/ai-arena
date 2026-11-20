@@ -525,5 +525,16 @@
     "color": "#10A37F",
     "effort": "xhigh",
     "harness": "Codex CLI"
+  },
+  {
+    "id": "hy4-flash-workbuddy",
+    "name": "HY 4 Flash (WorkBuddy)",
+    "port": 5149,
+    "fallbackPort": null,
+    "path": "/hy4-flash-workbuddy/",
+    "tag": "Tencent",
+    "color": "#0052D9",
+    "effort": "default",
+    "harness": "WorkBuddy"
   }
 ]
