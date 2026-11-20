@@ -1,0 +1,207 @@
+You are a senior creative developer with strong skills in Three.js, real-time graphics, interaction design, and frontend engineering.
+
+Build “Pocket World”: a polished, interactive 3D diorama of a tiny floating island.
+
+The goal is to create something that feels like a beautifully crafted digital toy—not a technical demo, a generic dashboard, or a collection of default geometric primitives. It should look appealing immediately and reward the user for interacting with it.
+
+Implement the actual working application. Do not stop at a proposal, wireframe, or project scaffold.
+
+## 1. Technology and project setup
+
+Use Three.js for rendering.
+
+For a new project, use Vite and TypeScript with minimal dependencies. If an existing frontend project is provided, inspect it first and integrate into its conventions rather than replacing it unnecessarily.
+
+Use OrbitControls or an equivalent implementation for camera interaction. Use compatible imports from the installed Three.js version.
+
+The application must run entirely in the browser without a backend.
+
+Create all scene objects through code. Do not use downloaded 3D models, external image textures, HDR environments, or asset packs. Procedural textures generated with Canvas or shaders are allowed.
+
+Do not depend on external services, API keys, or remotely hosted assets at runtime.
+
+## 2. Creative direction
+
+The island should resemble a handmade miniature: stylized, inviting, slightly whimsical, and visually cohesive.
+
+Use a carefully chosen palette with soft greens, warm wood, cream-colored walls, muted blue water, and amber window light. Adapt the palette naturally as the time and weather change.
+
+The scene should contain:
+
+- A floating island with a grassy top, an irregular silhouette, and a sculpted rocky underside.
+- A small, recognizable house with a roof, door, windows, chimney, and a few architectural details.
+- A small lake or pond with a visible shoreline.
+- Several trees with varied sizes and silhouettes.
+- A windmill with clearly visible rotating blades.
+- A few clouds, rocks, and restrained environmental details such as a path, fence, or flowers.
+
+Make the composition intentional. Establish a clear focal point, balance the objects around it, and avoid intersections or arbitrary object placement.
+
+Primitive geometries are acceptable building blocks, but combine and customize them so the finished objects feel designed.
+
+Use lighting, shadows, material variation, and subtle motion to give the world depth. Avoid excessive bloom, visual clutter, or overly saturated colors.
+
+Start with a flattering three-quarter camera view that shows the entire island, including its floating underside. The initial screen should already look composed and finished.
+
+## 3. Required interactions
+
+### A. Camera controls
+
+Allow users to orbit and zoom using mouse and touch controls.
+
+Use damping for smooth movement. Set sensible distance and angle limits so users cannot accidentally lose the island or move into confusing viewpoints.
+
+Do not allow unrestricted panning that makes the main scene disappear.
+
+### B. Time of day
+
+Provide a slider covering a full 24-hour day, with a readable time label.
+
+Changing the time must affect the actual scene, including:
+
+- Sun direction and lighting color.
+- Overall brightness.
+- Background or sky color.
+- The appearance of the environment at night.
+- The visual prominence of illuminated windows.
+
+Create recognizable transitions between daylight, sunset, and nighttime.
+
+Keep nighttime atmospheric but readable. The island should not disappear into darkness.
+
+Transitions should be smooth rather than abrupt. Updating the time label alone does not satisfy this requirement.
+
+### C. Weather
+
+Provide “Clear” and “Rain” weather controls.
+
+Switching to rain should smoothly introduce rain particles, darker clouds, softened sunlight, and visible ripples on the pond.
+
+Returning to clear weather should smoothly remove these effects.
+
+Rain must belong to the 3D scene rather than being a screen-space overlay. Rain should stop or recycle appropriately instead of visibly passing through the island indefinitely.
+
+Keep the rain visually legible without overwhelming the miniature.
+
+A lightweight procedural approximation is sufficient; physically accurate fluid simulation is not required.
+
+### D. Wind
+
+Provide a wind-strength slider.
+
+Wind strength must consistently influence:
+
+- Windmill rotation speed.
+- Tree sway.
+- Cloud movement.
+- Rain direction when rain is active.
+
+Use one shared wind state so these effects feel connected.
+
+At zero wind, wind-driven movement should stop or become negligible, but rain should still fall. Stronger wind should produce a clear change without making trees bend implausibly or causing uncontrolled motion.
+
+### E. House lights
+
+Clicking or tapping the house should toggle its lights.
+
+Show an obvious visual change through emissive windows and, when appropriate, a subtle light around the house.
+
+Include a matching light toggle in the interface so this interaction is also accessible without clicking a 3D object. Both interaction methods must update the same state.
+
+Distinguish a click from an orbit gesture. Dragging across the house must not accidentally toggle its lights.
+
+### F. Reset
+
+Provide a reset button that restores:
+
+- The initial camera view.
+- Time: 16:00.
+- Clear weather.
+- Wind strength: 30%.
+- House lights: off.
+
+The scene and all interface controls must return to the same consistent defaults.
+
+## 4. Interface and responsive layout
+
+Let the 3D world dominate the screen.
+
+Add a compact, carefully styled control panel with the title “Pocket World,” the environment controls, and brief interaction guidance.
+
+The interface should feel like part of the experience, not like an unfinished debug panel. Use readable typography, restrained spacing, and clear active states.
+
+Controls must have visible labels, keyboard support where applicable, and visible focus states.
+
+Make the application work on desktop and mobile. On smaller screens, reposition or collapse the panel so it does not cover the main island or make touch interaction frustrating.
+
+Resizing the window must not stretch the scene or break the camera composition.
+
+Respect reduced-motion preferences by reducing nonessential decorative motion while preserving functional controls.
+
+## 5. Animation and implementation quality
+
+Use a coherent application state for time, weather, wind, and house lighting. Derive the relevant scene effects from that state.
+
+Use time-based animation rather than frame-based increments. Clamp unusually large frame deltas so returning from a background tab does not cause dramatic jumps.
+
+Make transitions interruptible. Rapidly changing controls should not create competing animations or leave the scene in an inconsistent state.
+
+Organize the code into understandable modules for scene construction, environmental effects, interaction, and UI. Avoid both a giant monolithic file and unnecessary architectural complexity.
+
+Reuse geometry and materials where practical. Pool or reuse rain and ripple objects rather than creating new objects every frame.
+
+Keep particle counts, shadow settings, and pixel ratio reasonable. Aim for smooth performance on a typical modern laptop, with reduced rendering cost on smaller or less capable devices.
+
+Do not introduce a physics engine unless a required feature genuinely needs one.
+
+Handle missing WebGL support or initialization failure with a readable message rather than a blank page.
+
+## 6. Priorities
+
+Prioritize work in this order:
+
+1. A complete, runnable application.
+2. Strong initial composition and cohesive visual design.
+3. Correct, interconnected interactions.
+4. Smooth transitions and reliable behavior.
+5. Additional decorative details.
+
+A smaller, beautifully finished world is better than a larger scene full of broken or disconnected features.
+
+Do not add unrelated features such as accounts, multiplayer, inventory, or a large settings system.
+
+## 7. Verification
+
+After implementation, run the available build and type checks, and fix any errors.
+
+If browser automation or browser inspection is available, open the application and verify the rendered result rather than relying only on code review.
+
+Check these scenarios:
+
+- The initial view is attractive, readable, and fully framed.
+- Orbiting, zooming, and touch interaction behave sensibly.
+- Daytime, sunset, and nighttime are visibly different.
+- Rain can be enabled and disabled repeatedly without accumulating particles or leaving stale effects.
+- Wind changes the windmill, trees, clouds, and rain consistently.
+- Clicking the house toggles its lights, but dragging the camera does not.
+- The UI light toggle and the house interaction remain synchronized.
+- Rapid changes to time, weather, and wind do not break the scene.
+- Reset restores both the world and the controls.
+- Desktop and mobile layouts remain usable after resizing.
+- There are no application errors in the browser console during these interactions.
+
+If screenshots are available, inspect the default view, a rainy nighttime view with the house lights on, and a mobile layout. Use those screenshots to identify and correct visual problems.
+
+Do not claim to have run tests or inspected screenshots unless you actually did.
+
+## 8. Delivery
+
+Provide the complete implementation, including project configuration and a short README with exact installation, development, and production-build commands.
+
+Do not leave required functionality as pseudocode, placeholders, or TODO comments.
+
+In your final response, briefly summarize what you built, explain how to run it, report the checks you actually performed, and disclose any remaining limitations.
+
+Make reasonable creative and technical decisions without asking unnecessary clarification questions. Build the experience now.
+
+

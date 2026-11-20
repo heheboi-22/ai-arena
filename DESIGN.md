@@ -1,7 +1,6 @@
 # DESIGN.md - AI Arena (Model Aggregator & Comparison Console)
 
-> Design contract. Read together with `antislop.md` (the filter) and
-> `skills/antislop-ui/SKILL.md`.
+> Design contract.
 >
 > Rewritten 2026-09-28. The previous direction (deep navy, system blue,
 > Plus Jakarta Sans, "feels like Linear / Railway / Datadog") is withdrawn: it
